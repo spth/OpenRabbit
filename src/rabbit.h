@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
+ *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,8 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _RABBIT_H
-#define _RABBIT_H
+#ifndef OPENRABBIT_RABBIT_H
+#define OPENRABBIT_RABBIT_H
 
 char rabbit_reset(int tty);
 int rabbit_open(char *device);
@@ -30,6 +31,8 @@ char rabbit_coldload(int tty, char *file);
 char rabbit_pilot(int tty, char *pfile);
 char rabbit_upload(int tty, char *project);
 char rabbit_boot(int tty, char *coldload, char *pilot, char *project);
+char rabbit_debug(int tty);
+char rabbit_program(int tty, char *coldload, char *pilot, char *project);
 
-#endif // _RABBIT_H
+#endif
 
