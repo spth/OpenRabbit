@@ -1,7 +1,7 @@
-AC_INIT(configure.in)
+AC_INIT([openrabbit], [0.1.2])
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(openrabbit, 0.1.1)
+AM_INIT_AUTOMAKE
 
 AC_LANG_C
 AC_PROG_CC
