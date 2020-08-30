@@ -2,3 +2,5 @@
 - implement the watch window 
 - fix struct dependancy
 - make a gdb compatible interface, so kdevelop or motor can be used?
+- Merge this work into OpenOCD? That way, we'd automatically get the gdb compatible interface.
+

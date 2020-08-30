@@ -1,3 +1,6 @@
+2020-?-?	v0.1.2
+Update for current autotools and ncurses.
+
 2004-07-28	v0.1.1
 Creation of a decent project with automake/autoconf.
 
@@ -6,3 +9,4 @@ Extension of ncurses based debugger.
 
 2004-06-04	v0.0.1
 First implementation of the RFU.
+
