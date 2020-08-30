@@ -67,7 +67,7 @@ void sprintw(char *fmt, ...) {
 	scroll(win_stdio);
 	wmove(win_stdio,height-2, 1);
 	va_start(a, fmt);
-	vwprintw(win_stdio, fmt, a);
+	vw_printw(win_stdio, fmt, a);
 	box(win_stdio,0,0);
 	wrefresh(win_stdio);
 }
