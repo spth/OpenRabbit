@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
+ *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,12 +26,12 @@
 
 uint16 rabbit_csum(uint16 initial, uint8 *data, uint16 length);
 
-void rabbit_getvar(void *var, void **src, size_t sz);
+void rabbit_getvar(void *var, const void **src, size_t sz);
 
-void rabbit_parse_info(_TCSystemInfoProbe *info, void *src);
-void rabbit_parse_registers(struct __dkregisters *regs, void *src);
+void rabbit_parse_info(_TCSystemInfoProbe *info, const void *src);
+void rabbit_parse_registers(struct __dkregisters *regs, const void *src);
 
-void rabbit_show_registers(struct __dkregisters *regs);
+void rabbit_show_registers(const struct __dkregisters *regs);
 
 #endif // _RABDATA_H
 

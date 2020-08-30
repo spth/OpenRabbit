@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
+ *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -46,13 +47,13 @@ uint16 rabbit_csum(uint16 initial, uint8 *data, uint16 length) {
 	return(b | (a << 8));
 }
 
-void rabbit_getvar(void *var, void **src, size_t sz) {
+void rabbit_getvar(void *var, const void **src, size_t sz) {
 	memcpy(var, *src, sz);
-	*src += sz;
+	*(const unsigned char **)(src) += sz;
 }
 
-void rabbit_parse_info(_TCSystemInfoProbe *info, void *src) {
-	char *b = src;
+void rabbit_parse_info(_TCSystemInfoProbe *info, const void *src) {
+	const char *b = src;
 
 	// system info probe header
 	rabbit_load(info->FlashID, &src);
@@ -95,7 +96,7 @@ void rabbit_parse_info(_TCSystemInfoProbe *info, void *src) {
 	fprintf(stderr, "parsed %d bytes\n", (int)src - (int)b);
 }
 
-void rabbit_parse_registers(struct __dkregisters *regs, void *src) {
+void rabbit_parse_registers(struct __dkregisters *regs, const void *src) {
 	rabbit_getvar(&regs->_sp, &src, 2);
 	rabbit_getvar(&regs->_xpc, &src, 2);
 	rabbit_getvar(&regs->_afPrime, &src, 2);
@@ -112,7 +113,7 @@ void rabbit_parse_registers(struct __dkregisters *regs, void *src) {
 	rabbit_getvar(&regs->_pc, &src, 2);
 }
 
-void rabbit_show_registers(struct __dkregisters *regs) {
+void rabbit_show_registers(const struct __dkregisters *regs) {
 	fprintf(stderr, "registers:\n");
 
 	fprintf(stderr, "  sp  %6d 0x%04x\n", regs->_sp, regs->_sp);

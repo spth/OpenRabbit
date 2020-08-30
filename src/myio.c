@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
+ *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -53,7 +54,7 @@ ssize_t dread(int fd, void *buf, size_t count) {
 	fprintf(stderr, "reading %d bytes\n", count);
 #endif
 	for(c = 0; c < count; c += r) {
-		r = read(fd, buf+c, count-c);
+		r = read(fd, (char *)buf+c, count-c);
  		if(r < 0) return(r);
 	}
 #ifdef DEBUG_COMM
