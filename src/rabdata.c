@@ -93,7 +93,7 @@ void rabbit_parse_info(_TCSystemInfoProbe *info, const void *src) {
 	rabbit_load(info->IDBlock.idBlockCRC, &src);
 	rabbit_load(info->IDBlock.marker, &src);
 
-	fprintf(stderr, "parsed %d bytes\n", (int)src - (int)b);
+	fprintf(stderr, "parsed %td bytes\n", (const char *)src - b);
 }
 
 void rabbit_parse_registers(struct __dkregisters *regs, const void *src) {

@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifndef OPENRABBIT_RABBIT_H
-#define OPENRABBIT_RABBIT_H
+#define OPENRABBIT_RABBIT_H 1
 
 char rabbit_reset(int tty);
 int rabbit_open(char *device);

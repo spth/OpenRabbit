@@ -204,7 +204,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 		}
 
 		// calculate data checksum
-		csum = rabbit_csum(csum, b, tcph->length);
+		csum = rabbit_csum(csum,  (uint8 *) b, tcph->length);
 
 		if(data != NULL) {
 			// report space problem

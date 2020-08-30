@@ -97,7 +97,7 @@ void dtiming(int *rs, int *ws) {
 	}
 }
 
-char *load(char *pb, char *file, int *sz) {
+unsigned char *load(unsigned char *pb, char *file, int *sz) {
 	struct stat s;
 	int fd, r;
 

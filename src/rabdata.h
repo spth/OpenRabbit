@@ -19,8 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _RABDATA_H
-#define _RABDATA_H
+#ifndef OPENRABBIT_RABDATA_H
+#define OPENRABBIT_RABDATA_H 1
 
 #define rabbit_load(var, src) rabbit_getvar(&var, src, sizeof(var))
 
@@ -33,5 +33,5 @@ void rabbit_parse_registers(struct __dkregisters *regs, const void *src);
 
 void rabbit_show_registers(const struct __dkregisters *regs);
 
-#endif // _RABDATA_H
+#endif
 
