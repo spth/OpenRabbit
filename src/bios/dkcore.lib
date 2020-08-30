@@ -1,0 +1,140 @@
+/*** BeginHeader dkExitHook, dkSingleStepHook, dkPrologHook, dkEpilogHook, dkStatusFlags,
+					  dkRequest, dkAckToSend, dkStepFlags, dkSendFlags, dkptrASMbuf, dkASMbuf,
+					  dkRegisters, dkNextAddress, dkBreakAddress, dkWatchExpression,
+					  dkEntryCount, dkLastAsmStart, dkLastAsmEnd, dkLocks, dkRST28State,
+					  dkRST20State, dkSetStdioTimerHook, dkCheckStdioTimerOutHook */
+
+
+#define TC_TYPE_DEBUG						0x01
+
+#define TC_DEBUG_NOREQUEST					0x00
+#define TC_DEBUG_SINGLESTEP				0x01
+#define TC_DEBUG_TOGGLEBREAKPOINT		0x02
+#define TC_DEBUG_CLEARBREAKPOINTS		0x03
+#define TC_DEBUG_TOGGLEALLBREAKPOINTS	0x04
+#define TC_DEBUG_ATBREAKPOINT				0x05
+#define TC_DEBUG_STARTPROGRAM				0x06		// start from beginning
+#define TC_DEBUG_RUNPROGRAM				0x07		// only stop for breakpoints
+#define TC_DEBUG_STOPPROGRAM				0x08		// stop running program
+#define TC_DEBUG_ADDWATCH					0x09
+#define TC_DEBUG_DELETEWATCH				0x0a
+#define TC_DEBUG_DELETEALLWATCHES		0x0b
+#define TC_DEBUG_EXECWATCH					0x0c
+#define TC_DEBUG_EXECALLWATCHES			0x0d
+#define TC_DEBUG_SENDCHAR					0x0e
+#define TC_DEBUG_RESET						0x0f
+#define TC_DEBUG_SETSENDFLAGS          0x10
+#define TC_DEBUG_REGDATA               0x11
+#define TC_DEBUG_WATCHDATA             0x12
+#define TC_DEBUG_ASMDATA               0x13
+#define TC_DEBUG_STACKDATA             0x14
+#define TC_DEBUG_STDIO						0x15
+#define TC_DEBUG_WRITEREGDATA				0x16
+#define TC_DEBUG_STDIOCHARREADY			0x17
+#define TC_DEBUG_NOOP						0x18
+#define TC_DEBUG_ENABLEDOPTIONS			0x19
+#define TC_DEBUG_SETDEBUGTAG				0x1a
+#define TC_DEBUG_GETDEBUGTAG           0x1b
+
+// debug kernel single step flags
+#define DKF_STEP_INTO					0
+#define DKF_STEP_OVER					1
+#define DKF_STEP_ASM						2
+#define DKF_STEP_SOURCE					3
+#define DKF_STEP_CALL					4
+#define DKF_STEP_LCALL					5
+
+// debug kernel status flags
+#define DKF_STAT_AT_BP					0
+#define DKF_STAT_AT_HARD_BP			1
+#define DKF_STAT_RUNMODE				2
+#define DKF_STAT_STEPMODE				3
+#define DKF_STAT_ASMSTEPMODE			4
+#define DKF_STAT_ATEXIT					5
+#define DKF_STAT_CONTEXTSWITCH		6			// currently used only for ucos
+#define DKF_STAT_INWATCH				7
+
+#define DK_SEND_STACK_LENGTH			32
+#define DK_SEND_ASM_LENGTH				256 - TC_HEADER_RESERVE
+//debug kernel send flags
+#define DKF_SEND_STACK		0
+#define DKF_SEND_WATCHES	1
+#define DKF_SEND_ASM			2
+#define DKF_SEND_REGS		3
+#define DKF_SEND_STATUS		4
+#define DKF_SEND_ACK			5
+
+// debug kernel error messages for unsupported commands
+// these are returned to dc when dc makes a request that
+// has been compiled out of the debug kernel
+#define DK_ERROR_BPNOTENABLED							0xff
+#define DK_ERROR_ASMSINGLESTEPNOTENABLED			0xfe
+#define DK_ERROR_WATCHNOTENABLED						0xfd
+
+#define DKF_STDIO_LOCK		0
+#define DKF_GETCHAR_LOCK	1
+#define DKF_RESET_LOCK		2
+#define DKF_DK_LOCK			3
+#define DK_STDIO_TIMEOUT	100
+#define DK_GETCHAR_TIMEOUT	100
+
+#define  dkIOI		0xD3
+#define  dkIOE		0xDB
+#define  dkALTD	0x76
+
+#define	DK_RST20 0xe7
+#define	DK_RST28 0xef
+
+// Z = esc or 4 byte instruction
+// S = single byte instruction
+// D = double byte instruction
+// T = triple byte instruction
+
+#define	dkZZ		0x0
+#define	dkZS		0x1
+#define	dkZD		0x2
+#define	dkZT		0x3
+#define 	dkSZ		0x4
+#define	dkSS		0x5
+#define  dkSD		0x6
+#define 	dkST		0x7
+#define	dkDZ		0x8
+#define 	dkDS		0x9
+#define	dkDD		0xa
+#define  dkDT		0xb
+#define	dkTZ		0xc
+#define	dkTS		0xd
+#define	dkTD		0xe
+#define	dkTT		0xf
+
+struct __dkregisters
+{
+	uint16	_sp;
+	uint16	_xpc;
+	uint16	_afPrime;
+	uint16	_bcPrime;
+	uint16	_dePrime;
+	uint16	_hlPrime;
+	uint16	_af;
+	uint16	_bc;
+	uint16	_de;
+	uint16	_hl;
+	uint16	_ix;
+	uint16	_iy;
+	uint8	_ip;
+	uint16	_pc;
+};
+
+struct __dkaddress
+{
+	uint16  offset;
+	uint8 xpc;
+};
+
+struct __dkbreakpoint
+{
+	uint32 addr;
+	char	 		  flags;
+	int16	 		  (*condition)();
+};
+

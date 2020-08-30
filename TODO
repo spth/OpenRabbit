@@ -1,0 +1,4 @@
+- proper error handling (instead of exiting we should retry and/or report)
+- implement the watch window 
+- fix struct dependancy
+- make a gdb compatible interface, so kdevelop or motor can be used?
