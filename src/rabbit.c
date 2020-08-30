@@ -262,13 +262,13 @@ char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data) 
 }
 
 char rabbit_coldload(int tty, char *file) {
-	const char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0E, 0x20 };
-	const char colddone[6] = { 0x80, 0x0E, 0x30, 0x80, 0x24, 0x80 };
+	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0E, 0x20 };
+	const unsigned char colddone[6] = { 0x80, 0x0E, 0x30, 0x80, 0x24, 0x80 };
 	unsigned char *pb = NULL;
 	int sz;
 
 	// load coldload.bin
-  if((pb = load(pb, file, &sz)) == NULL) return(0);
+	if((pb = load(pb, file, &sz)) == NULL) return(0);
 
 	// set baudrate
 	if(!tty_setbaud(tty, 2400)) return(0);
