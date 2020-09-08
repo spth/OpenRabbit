@@ -51,7 +51,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <io.h>
+
+//#include <io.h>
+
+#include <unistd.h>
+#define O_BINARY 0
+
 #include <sys/stat.h>
 
 #if 0 == RAM_CONTROL_OPTION
@@ -144,11 +149,14 @@ int main(int argc, char* argv[])
    	printf("error writing start sequence\n");
    }
 
-   for(x=0;x<32768&&!eof(h_in);x++) {
-   	if(read(h_in,&ch,1)<0) {
+   for(x=0;x<32768/*&&!eof(h_in)*/;x++) {
+        int r;
+   	if((r = read(h_in,&ch,1))<0) {
       	printf("error reading input file\n");
          return 1;
       }
+      if(!r)
+        break;
 
       seq[0]=(x>>8)&0xff;
       seq[1]=x&0xff;
