@@ -119,7 +119,7 @@ delay_loop:
 	ld	(PCFR), a
 
 	call	_get_byte
-	nop                                  ; These  nop after call are not in the original source, but in the binary - maybe Dynamic C inserts them automaticqally?
+	nop                                  ; These  nop after call are not in the original source, but in the binary - apparenlty Dynamic C inserts them automatically when a source file is compiled in debug mode. Todo: Remove them after test to verify that they are not needed.
 	ld	e, a                         ; pilot BIOS's begin physical address LSB
 
 	call	_get_byte
@@ -261,7 +261,7 @@ timeout::
 	jr	timeout
 coldloadend::
 
-; The following 5 instructions are not in the original source, but in the original binary:
+; The following 5 instructions are not in the original source, but in the original binary. Todo: Remove them after test to verify that they are not needed.
 	ld	a, xpc
 	push	af
 	pop	af
