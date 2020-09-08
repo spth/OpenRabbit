@@ -1,3 +1,4 @@
+- Translate pilot.c to SDCC
 - proper error handling (instead of exiting we should retry and/or report)
 - implement the watch window 
 - fix struct dependancy
