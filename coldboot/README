@@ -1,11 +1,18 @@
 This directory contains files used to build coldboot.bin and pilot.bin, helper firmware used in uploading programs to the Rabbit.
 
-Uploading via Openrabbit is a multi-stage process (similar to Dynamic C)
+Uploading via Openrabbit is a multi-stage process (similar to Dynamic)
 
 * Put Rabbit into cold-bootmode
 * Load initial loader (coldboot.bin) in triplet format at 2400 bps
 * Run initial loader to load secondary loader (pilot.bin) at 57600 bps
 * Run secondary loader to load user program
 
-The files in this directory are derived from Dynamic C and covered by the Mozilla Public License Version 2.0.
+The files in this directory are derived from Dynamic C 9.62 (https://github.com/digidotcom/DCRabbit_9) and covered by the Mozilla Public License Version 2.0.
+
+* makecold: Utility to convert binary to triplet form
+* makecold.cpp: Source for above
+* coldboot.bin: initial loader
+* coldboot.s: Source for above
+* pilot.bin: Secondary loader
+* pilot.c: Source for above (to be compiled with Dynamic C for now, should be converted to compile with SDCC)
 

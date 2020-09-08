@@ -25,3 +25,7 @@ coldload.ihx: coldload.rel
 coldload.rel: coldload.s
 	$(ASRAB) -o coldload.s
 
+# TODO: Modify pilot.c to make it actually compileable with SDCC
+pilot.bin: pilot.c
+	$(SDCC) -mr2k --no-std-crt0 pilot.c
+
