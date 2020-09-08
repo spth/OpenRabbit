@@ -27,5 +27,5 @@ coldload.rel: coldload.s
 
 # TODO: Modify pilot.c to make it actually compileable with SDCC
 pilot.bin: pilot.c
-	$(SDCC) -mr2k --no-std-crt0 pilot.c
+	$(SDCC) -mr2k --no-std-crt0 --code-loc 0x6000 --data-loc 0x7fff pilot.c
 
