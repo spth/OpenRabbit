@@ -58,10 +58,10 @@ ssize_t dread(int fd, void *buf, size_t count) {
  		if(r < 0) return(r);
 	}
 #ifdef DEBUG_COMM
-  fprintf(stderr, "read %d bytes\n", c);
+	fprintf(stderr, "read %d bytes\n", c);
 #endif
 #ifdef DEBUG_IO
-  write(1, buf, c);
+	write(1, buf, c);
 #endif
 	dread_count += c;
 	return(c);
@@ -143,11 +143,11 @@ load_ret:
 }
 
 char tty_setbaud(int tty, int baud) {
-  struct termios newtio;
-  int b;
+	struct termios newtio;
+	int b;
 
 	// convert baudrate
-  switch(baud) {
+	switch(baud) {
 	  case(2400): b = B2400; break;
 		case(57600): b = B57600; break;
 		case(115200): b = B115200; break;
@@ -170,11 +170,11 @@ char tty_setbaud(int tty, int baud) {
 	// change settings
 	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0) return(0);
 
-  fprintf(stderr, "set baudrate to %d\n", baud);
+	fprintf(stderr, "set baudrate to %d\n", baud);
 
 	// give other end time
 	usleep(100000);
 
-  return(1);
+	return(1);
 }
- 
+
