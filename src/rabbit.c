@@ -167,9 +167,9 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 
 	// get frame header
 	if(rabbit_sread(tty, tcph, TC_HEADER_SIZE) < (ssize_t)TC_HEADER_SIZE) {
-    perror("read(tcph) < TC_HEADER_SIZE");
-    return(0);
-  }
+		perror("read(tcph) < TC_HEADER_SIZE");
+		return(0);
+	}
 
 	// calculate frame checksum
 	csum = rabbit_csum(0, (uint8 *) tcph, TC_HEADER_SIZE-sizeof(tcph->header_checksum));
@@ -318,7 +318,7 @@ char rabbit_pilot(int tty, char *pfile) {
 	if(!tty_setbaud(tty, 57600)) return(0);
 
 	// load pilot.bin
-  if((pb = load(pb, pfile, &sz)) == NULL) return(0);
+	if((pb = load(pb, pfile, &sz)) == NULL) return(0);
 
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
@@ -375,7 +375,7 @@ char rabbit_pilot(int tty, char *pfile) {
 }
 
 char rabbit_upload(int tty, char *project) {
-  unsigned char *pb = NULL;
+	unsigned char *pb = NULL;
 	unsigned char *wp = NULL;
 	_TCSystemInfoProbe info;
 	unsigned char b[1024];
@@ -419,7 +419,7 @@ char rabbit_upload(int tty, char *project) {
 	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_FLASHDATA, 0, NULL)) return(0);
 
 	// load project.bin
-  if((pb = load(pb, project, &sz)) == NULL) return(0);
+	if((pb = load(pb, project, &sz)) == NULL) return(0);
 
 	// erase flash
 	flash = WP_DATA_SIZE+sz;
@@ -468,15 +468,15 @@ char rabbit_debug(int tty) {
 
 	// start the bios
 	start = TC_STARTBIOS_FLASH;
-  if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_STARTBIOS, sizeof(start), &start)) return(0);
+	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_STARTBIOS, sizeof(start), &start)) return(0);
 	/* no reply for this one? :S */
 
 	usleep(100000);
 
 	// ping her once
 	fprintf(stderr, "ping?\n");
-  if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
-  if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
+	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
+	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
 	fprintf(stderr, "pong!\n");
 
 	fprintf(stderr, "configure debug mode\n");
