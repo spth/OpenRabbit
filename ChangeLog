@@ -1,5 +1,5 @@
-2020-?-?	v0.1.2
-Update for current autotools and ncurses.
+2020-09-14	v0.1.2
+Update for current autotools and ncurses. Fixes to make it work with USB serial converter.
 
 2004-07-28	v0.1.1
 Creation of a decent project with automake/autoconf.

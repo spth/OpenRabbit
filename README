@@ -2,6 +2,9 @@ What is OpenRabbit?
 
 A free portable replacement for the Digi Rabbit Field Utility and an on-target debugger. This allows Rabbit development on OSes other than Windows. The on-target debugger currently only works with programs created using the non-free Dynamic C (which can be run .e.g via wine).
 
+It requires the use of two binary blobs: initial loader (coldload.bin) and secondary loader (pilot.bin). Those from Dynamix C 8.61 work. The pilot.bin from Dynamic C 9.62A does not work.
+[we now have free source for these binary blobs, and it is planned to build them with Openrabbit int he future].
+
 History:
 
 OpenRabbit was developed and maintained by Lourens Rozema. The latest release was 0.1.1.
