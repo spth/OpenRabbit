@@ -97,7 +97,7 @@ void dtiming(int *rs, int *ws) {
 	}
 }
 
-unsigned char *load(unsigned char *pb, char *file, int *sz) {
+unsigned char *load(unsigned char *pb, const char *file, int *sz) {
 	struct stat s;
 	int fd, r;
 
@@ -142,7 +142,7 @@ load_ret:
 	return(pb);
 }
 
-char tty_setbaud(int tty, int baud) {
+int tty_setbaud(int tty, int baud) {
 	struct termios newtio;
 	int b;
 
@@ -154,7 +154,7 @@ char tty_setbaud(int tty, int baud) {
 		case(230400): b = B230400; break;
 		default:
 			fprintf(stderr, "invalid baud in setbaud(), left unmodified!\n");
-			return(0);
+			return(-1);
 	}
   
 	// setup port
@@ -168,13 +168,14 @@ char tty_setbaud(int tty, int baud) {
 	fprintf(stderr, "flushing data for baudrate set\n");
 
 	// change settings
-	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0) return(0);
+	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0)
+		return(-1);
 
 	fprintf(stderr, "set baudrate to %d\n", baud);
 
 	// give other end time
 	usleep(100000);
 
-	return(1);
+	return(0);
 }
 
