@@ -56,17 +56,17 @@ int rabbit_reset(int tty) {
 
 	fprintf(stderr, "reset rabbit\n");
 
-	// set DTR (reset) high
+	// Assert DTR (i.e drive /reset low)
 	s |= TIOCM_DTR;
 	if(ioctl(tty, TIOCMSET, &s) < 0) {
 		perror("ioctl(TIOCMSET) high");
 		return(-1);
 	}
-	
+
 	// wait a bit
 	usleep(250000);
 
-	// set DTR (reset) low
+	// Deassert DTR (i.e drive /reset high)
 	s &= ~TIOCM_DTR;
 	if(ioctl(tty, TIOCMSET, &s) < 0) {
 		perror("ioctl(TIOCMSET) low");
@@ -82,7 +82,7 @@ int rabbit_reset(int tty) {
 int rabbit_open(const char *device) {
 	int tty;
 
-	// open tty device, wihout controler
+	// open tty device, without controler
 	if((tty = open(device, O_RDWR | O_NOCTTY)) < 0) {
 		perror(device);
 		return(tty);
@@ -263,8 +263,9 @@ char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data) 
 }
 
 int rabbit_coldload(int tty, const char *file) {
-	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0E, 0x20 };
-	const unsigned char colddone[6] = { 0x80, 0x0E, 0x30, 0x80, 0x24, 0x80 };
+	int s;
+	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 };
+	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 };
 	unsigned char *pb = NULL;
 	int sz;
 
@@ -282,10 +283,19 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 	}
 
-	// TODO: check status line, should be low now
+	usleep (25000);
+	// Check status line.
+	if(ioctl(tty, TIOCMGET, &s) < 0) {
+		perror("ioctl(TIOCMGET)");
+		return(-1);
+	}
+	if(!(s & TIOCM_DSR )) {
+		fprintf(stderr, "Error: Status should be low before sending initial loader.\n");
+		return(-1);
+	}
 
 	// send coldload.bin	FIXME: escape some chars???
-	sz -= 3;
+	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
 	fprintf(stderr, "sending %d coldload\n", sz);
 	if(dwrite(tty, pb, sz) < sz) {
 		perror("write(coldload) < sz");
@@ -300,7 +310,16 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 	}
 
-	// TODO: check status line, should be high now
+	usleep (25000);
+	// Check status line.
+	if(ioctl(tty, TIOCMGET, &s) < 0) {
+		perror("ioctl(TIOCMGET)");
+		return(-1);
+	}
+	if(s & TIOCM_DSR ) {
+		fprintf(stderr, "Error: Status should be high after sending initial loader.\n");
+		return(-1);
+	}
 
 	return(0);
 }
@@ -513,7 +532,7 @@ char rabbit_debug(int tty) {
 	return(1);
 }
 
-char rabbit_program(int tty, char *coldload, char *pilot, char *project) {
+int rabbit_program(int tty, char *coldload, char *pilot, char *project) {
 	// reset her
 	if(rabbit_reset(tty))
 		return(-1);

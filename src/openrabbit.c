@@ -455,9 +455,9 @@ int main(int argc, char **argv) {
 	int i,c;
 
 	// check argument count
-  if(argc <= 7) {
-	  fprintf(stderr, "Usage: %s <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <device>\n", argv[0]);
-    return(1);
+	if(argc <= 7) {
+		fprintf(stderr, "Usage: %s <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <device>\n", argv[0]);
+	return(1);
 	}
 
 	// are we the just the rfu?

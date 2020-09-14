@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-// #define DEBUG_COMM
+ #define DEBUG_COMM
 // #define DEBUG_IO
 
 unsigned long dwrite_count = 0;
