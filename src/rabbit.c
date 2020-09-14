@@ -382,6 +382,8 @@ int rabbit_pilot(int tty, const char *pfile) {
 	} pilot;
 	int sz, i;
 
+	int pilotoffset = 0; // Old pilot.bin from Dynamic C 8 used 0x6000.
+
 	// move baudrate up
 	if(tty_setbaud(tty, 57600))
 		return(-1);
@@ -392,7 +394,7 @@ int rabbit_pilot(int tty, const char *pfile) {
 
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
-	pilot.sz = sz - 0x6000L;	// pilot starts at 0x6000 in file? :S
+	pilot.sz = sz - pilotoffset;
 	for(pilot.csum = 0, i = 0; i < 6; i++) pilot.csum += ((uint8*)&pilot)[i];
 	if(dwrite(tty, &pilot, 7) < 7) {
 		perror("write(pilot) < sizeof(pilot)");
@@ -416,14 +418,14 @@ int rabbit_pilot(int tty, const char *pfile) {
 
 	// send pilot
 	fprintf(stderr, "sending %d pilot\n", pilot.sz);
-	if(dwrite(tty, pb+0x6000L, pilot.sz) < pilot.sz) {
+	if(dwrite(tty, pb + pilotoffset, pilot.sz) < pilot.sz) {
 		perror("write(pilot) < pilot.sz");
 		free(pb);
 		return(-1);
 	}
 
 	// calculate pilot checksum
-	csumU = rabbit_csum(0, pb+0x6000L, pilot.sz);
+	csumU = rabbit_csum(0, pb + pilotoffset, pilot.sz);
 
 	// wait for checksum
 	if(dread(tty, &csumR, sizeof(csumR)) < (ssize_t)sizeof(csumR)) {
