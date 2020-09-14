@@ -19,6 +19,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <termios.h>
 #include <stdlib.h>
@@ -267,12 +268,12 @@ int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 		perror("triplet write < 3");
 		return(-1);
 	}
-	usleep(15000);
+	usleep(15000); // Give enough time to send, so we can assume that the triplet has been written once the function returns.
 	return(0);
 }
 
 int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
-	for(int i = 0; i < n; i += 3)
+	for(int i = 0; i < n; i++)
 		if(rabbit_triplet(tty, triplets + i * 3))
 			return(-1);
 	return(0);
@@ -280,19 +281,49 @@ int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
 
 int rabbit_coldload(int tty, const char *file) {
 	int s;
+	const unsigned char pverify[12] = { 0x80, 0x09, 0x51, 0x80, 0x09, 0x54, 0x80, 0x0e, 0x30, 0x80, 0x0e, 0x20};
 	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 };
 	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 };
 	unsigned char *pb;
 	int sz;
+	bool pverify_failed = false;
 
-	// load coldload.bin
-	if((pb = load(pb, file, &sz)) == NULL) return(0);
+	// Load initial loader (binary consisting of triplets).
+	if(!(pb = load(pb, file, &sz)))
+		return(-1);
 
-	// set baudrate
+	if(sz % 3) {
+		fprintf(stderr, "Initial loader triplet binary %s size is not a multiple of 3.\n", file);
+		return(-1);
+	}
+
+	// Set baudrate.
 	if(tty_setbaud(tty, 2400))
 		return(-1);
 
-	// tell rabbit coldload.bin is comming
+	// Processor verifiction sequence.
+	if(rabbit_triplets(tty, pverify, 3)) // Why doesn't this work for the status line? If we omit the 6 bytes for the watchdog, it works!
+		return(-1);
+	usleep(75000);
+	if(ioctl(tty, TIOCMGET, &s) < 0) {
+		perror("ioctl(TIOCMGET)");
+		free(pb);
+		return(-1);
+	}
+	pverify_failed += (s & TIOCM_DSR);
+	if(rabbit_triplets(tty, pverify + 9, 1))
+		return(-1);
+	usleep(75000);
+	if(ioctl(tty, TIOCMGET, &s) < 0) {
+		perror("ioctl(TIOCMGET)");
+		free(pb);
+		return(-1);
+	}
+	pverify_failed += !(s & TIOCM_DSR);
+	if(pverify_failed)
+		fprintf(stderr, "Warning: Processor verification sequence failed!\n");
+
+	// tell rabbit initial loader is comming.
 	if(rabbit_triplets(tty, coldload, sizeof(coldload) / 3)) {
 		free(pb);
 		return(-1);
@@ -302,23 +333,25 @@ int rabbit_coldload(int tty, const char *file) {
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
+		free(pb);
 		return(-1);
 	}
 	if(!(s & TIOCM_DSR)) {
 		fprintf(stderr, "Error: Status line should be low before sending initial loader.\n");
-		return(-1);
-	}
-
-	// send coldload.bin	FIXME: escape some chars???
-	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
-
-	fprintf(stderr, "sending %d coldload\n", sz);
-	if(rabbit_triplets(tty, pb, sz / 3)) {
 		free(pb);
 		return(-1);
 	}
 
-	// tell her we're done with coldload
+	// Send initial loader.
+	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
+	fprintf(stderr, "sending %d initial loader triplets\n", sz);
+	if(rabbit_triplets(tty, pb, sz / 3)) {
+		free(pb);
+		return(-1);
+	}
+	free(pb);
+
+	// Tell her we're done with iniital loader.
 	if(rabbit_triplets(tty, colddone, sizeof(colddone) / 3)) {
 		free(pb);
 		return(-1);
