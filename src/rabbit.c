@@ -262,11 +262,27 @@ char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data) 
 	return(1);
 }
 
+int rabbit_triplet(int tty, const unsigned char triplet[3]) {
+	if(dwrite(tty, triplet, 3) < 3) {
+		perror("triplet write < 3");
+		return(-1);
+	}
+	usleep(15000);
+	return(0);
+}
+
+int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
+	for(int i = 0; i < n; i += 3)
+		if(rabbit_triplet(tty, triplets + i * 3))
+			return(-1);
+	return(0);
+}
+
 int rabbit_coldload(int tty, const char *file) {
 	int s;
 	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 };
 	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 };
-	unsigned char *pb = NULL;
+	unsigned char *pb;
 	int sz;
 
 	// load coldload.bin
@@ -277,47 +293,45 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 
 	// tell rabbit coldload.bin is comming
-	if(dwrite(tty, &coldload, sizeof(coldload)) < (ssize_t)sizeof(coldload)) {
-		perror("write(coldload) < sizeof(coldload)");
+	if(rabbit_triplets(tty, coldload, sizeof(coldload) / 3)) {
 		free(pb);
 		return(-1);
 	}
 
-	usleep (25000);
+	usleep (75000);
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
 		return(-1);
 	}
-	if(!(s & TIOCM_DSR )) {
-		fprintf(stderr, "Error: Status should be low before sending initial loader.\n");
+	if(!(s & TIOCM_DSR)) {
+		fprintf(stderr, "Error: Status line should be low before sending initial loader.\n");
 		return(-1);
 	}
 
 	// send coldload.bin	FIXME: escape some chars???
 	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
+
 	fprintf(stderr, "sending %d coldload\n", sz);
-	if(dwrite(tty, pb, sz) < sz) {
-		perror("write(coldload) < sz");
+	if(rabbit_triplets(tty, pb, sz / 3)) {
 		free(pb);
 		return(-1);
 	}
 
 	// tell her we're done with coldload
-	if(dwrite(tty, colddone, sizeof(colddone)) < (ssize_t)sizeof(colddone)) {
-		perror("write(colddone) < sizeof(colddone)");
+	if(rabbit_triplets(tty, colddone, sizeof(colddone) / 3)) {
 		free(pb);
 		return(-1);
 	}
 
-	usleep (25000);
+	usleep (75000);
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
 		return(-1);
 	}
 	if(s & TIOCM_DSR ) {
-		fprintf(stderr, "Error: Status should be high after sending initial loader.\n");
+		fprintf(stderr, "Error: Status line should be high after sending initial loader.\n");
 		return(-1);
 	}
 
