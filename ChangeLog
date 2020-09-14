@@ -1,3 +1,6 @@
+2020-?-?	v0.2.0
+Do not depend on coldload.bin from Dynamic C.
+
 2020-09-14	v0.1.2
 Update for current autotools and ncurses. Fixes to make it work with USB serial converter.
 
