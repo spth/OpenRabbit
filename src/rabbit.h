@@ -22,17 +22,17 @@
 #ifndef OPENRABBIT_RABBIT_H
 #define OPENRABBIT_RABBIT_H 1
 
-char rabbit_reset(int tty);
-int rabbit_open(char *device);
+int rabbit_reset(int tty);
+int rabbit_open(const char *device);
 char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data);
 char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data);
 char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data);
-char rabbit_coldload(int tty, char *file);
-char rabbit_pilot(int tty, char *pfile);
-char rabbit_upload(int tty, char *project);
+int rabbit_coldload(int tty, const char *file);
+int rabbit_pilot(int tty, const char *pfile);
+int rabbit_upload(int tty, const char *project);
 char rabbit_boot(int tty, char *coldload, char *pilot, char *project);
 char rabbit_debug(int tty);
-char rabbit_program(int tty, char *coldload, char *pilot, char *project);
+int rabbit_program(int tty, char *coldload, char *pilot, char *project);
 
 #endif
 

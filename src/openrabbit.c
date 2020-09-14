@@ -475,7 +475,7 @@ int main(int argc, char **argv) {
 	}
 
 	// program the damn thing
-	if(! rabbit_program(tty, argv[1], argv[2], argv[3])) {
+	if(rabbit_program(tty, argv[1], argv[2], argv[3])) {
 		close(tty);
 		return(3);
 	}
