@@ -454,24 +454,28 @@ int main(int argc, char **argv) {
 	int tty;
 	int i,c;
 
+	// are we the just the rfu?
+	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
+		rfu = 1;
+
 	// check argument count
-	if(argc <= 7) {
-		fprintf(stderr, "Usage: %s <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <device>\n", argv[0]);
-	return(1);
+	if(argc != (rfu ? 5 : 8)) {
+		fprintf(stderr, "Usage: openrabbitfu <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+		fprintf(stderr, "Usage: openrabbit <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+		return(1);
 	}
 
-	// are we the just the rfu?
-	if(strcmp(argv[0]+strlen(argv[0])-strlen("rfu"), "rfu") == 0) rfu = 1;
-
 	// make connection
-	if((tty = rabbit_open(argv[7])) < 0) return(2);
+	if((tty = rabbit_open(argv[rfu? 4 : 7])) < 0)
+		return(2);
 
 	if(!rfu) {
 		// initialize file slots
 		fileinit();
 
 		// load break file if we're not rfu
-		if(!rabbit_brk_load(argv[4], argv[5], argv[6])) return(3);
+		if(!rabbit_brk_load(argv[4], argv[5], argv[6]))
+			return(3);
 	}
 
 	// program the damn thing
@@ -481,7 +485,8 @@ int main(int argc, char **argv) {
 	}
 
 	// stop here if we're rfu
-	if(rfu) return(0);
+	if(rfu)
+		return(0);
 
 	// start debug
 	if(! rabbit_debug(tty)) {
@@ -493,7 +498,8 @@ int main(int argc, char **argv) {
 	screen_init();
 
 	// stop once, to init
-	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_STOPPROGRAM, 0, NULL)) goto main_abort;
+	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_STOPPROGRAM, 0, NULL))
+		goto main_abort;
 
 	for(c = 0, stop = 0; !stop;) {
 		// update bps	FIXME: find a good place for this :)

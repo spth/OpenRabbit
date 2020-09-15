@@ -1,5 +1,5 @@
 2020-?-?	v0.2.0
-Do not depend on coldload.bin from Dynamic C.
+Build own coldload.bin. Use Dynamic C 9 pilot.bin format instead of Dynamic C 8 one. Drop unused RFU arguments.
 
 2020-09-14	v0.1.2
 Update for current autotools and ncurses. Fixes to make it work with USB serial converter.

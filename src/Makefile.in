@@ -103,9 +103,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_openrabbit_OBJECTS = openrabbit.$(OBJEXT) myio.$(OBJEXT) \
-	rabbit.$(OBJEXT) rabdata.$(OBJEXT) rabio.$(OBJEXT) \
-	rabmap.$(OBJEXT)
+am_openrabbit_OBJECTS = openrabbit-openrabbit.$(OBJEXT) \
+	openrabbit-myio.$(OBJEXT) openrabbit-rabbit.$(OBJEXT) \
+	openrabbit-rabdata.$(OBJEXT) openrabbit-rabio.$(OBJEXT) \
+	openrabbit-rabmap.$(OBJEXT)
 openrabbit_OBJECTS = $(am_openrabbit_OBJECTS)
 openrabbit_DEPENDENCIES =
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -113,8 +114,8 @@ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
 openrabbit_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(openrabbit_LDFLAGS) $(LDFLAGS) -o $@
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(openrabbit_CFLAGS) \
+	$(CFLAGS) $(openrabbit_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -130,9 +131,12 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/myio.Po ./$(DEPDIR)/openrabbit.Po \
-	./$(DEPDIR)/rabbit.Po ./$(DEPDIR)/rabdata.Po \
-	./$(DEPDIR)/rabio.Po ./$(DEPDIR)/rabmap.Po
+am__depfiles_remade = ./$(DEPDIR)/openrabbit-myio.Po \
+	./$(DEPDIR)/openrabbit-openrabbit.Po \
+	./$(DEPDIR)/openrabbit-rabbit.Po \
+	./$(DEPDIR)/openrabbit-rabdata.Po \
+	./$(DEPDIR)/openrabbit-rabio.Po \
+	./$(DEPDIR)/openrabbit-rabmap.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -302,6 +306,7 @@ openrabbit_SOURCES = openrabbit.c myio.c rabbit.c rabdata.c rabio.c rabmap.c
 
 # set the include path found by configure
 AM_CPPFLAGS = $(all_includes)
+openrabbit_CFLAGS = -pedantic
 
 # the library search path.
 openrabbit_LDFLAGS = $(all_libraries) 
@@ -400,12 +405,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myio.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rabbit.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rabdata.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rabio.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rabmap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-myio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-openrabbit.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-rabbit.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-rabdata.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-rabio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openrabbit-rabmap.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -433,6 +438,90 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+openrabbit-openrabbit.o: openrabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-openrabbit.o -MD -MP -MF $(DEPDIR)/openrabbit-openrabbit.Tpo -c -o openrabbit-openrabbit.o `test -f 'openrabbit.c' || echo '$(srcdir)/'`openrabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-openrabbit.Tpo $(DEPDIR)/openrabbit-openrabbit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='openrabbit.c' object='openrabbit-openrabbit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-openrabbit.o `test -f 'openrabbit.c' || echo '$(srcdir)/'`openrabbit.c
+
+openrabbit-openrabbit.obj: openrabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-openrabbit.obj -MD -MP -MF $(DEPDIR)/openrabbit-openrabbit.Tpo -c -o openrabbit-openrabbit.obj `if test -f 'openrabbit.c'; then $(CYGPATH_W) 'openrabbit.c'; else $(CYGPATH_W) '$(srcdir)/openrabbit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-openrabbit.Tpo $(DEPDIR)/openrabbit-openrabbit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='openrabbit.c' object='openrabbit-openrabbit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-openrabbit.obj `if test -f 'openrabbit.c'; then $(CYGPATH_W) 'openrabbit.c'; else $(CYGPATH_W) '$(srcdir)/openrabbit.c'; fi`
+
+openrabbit-myio.o: myio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-myio.o -MD -MP -MF $(DEPDIR)/openrabbit-myio.Tpo -c -o openrabbit-myio.o `test -f 'myio.c' || echo '$(srcdir)/'`myio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-myio.Tpo $(DEPDIR)/openrabbit-myio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='myio.c' object='openrabbit-myio.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-myio.o `test -f 'myio.c' || echo '$(srcdir)/'`myio.c
+
+openrabbit-myio.obj: myio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-myio.obj -MD -MP -MF $(DEPDIR)/openrabbit-myio.Tpo -c -o openrabbit-myio.obj `if test -f 'myio.c'; then $(CYGPATH_W) 'myio.c'; else $(CYGPATH_W) '$(srcdir)/myio.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-myio.Tpo $(DEPDIR)/openrabbit-myio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='myio.c' object='openrabbit-myio.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-myio.obj `if test -f 'myio.c'; then $(CYGPATH_W) 'myio.c'; else $(CYGPATH_W) '$(srcdir)/myio.c'; fi`
+
+openrabbit-rabbit.o: rabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabbit.o -MD -MP -MF $(DEPDIR)/openrabbit-rabbit.Tpo -c -o openrabbit-rabbit.o `test -f 'rabbit.c' || echo '$(srcdir)/'`rabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabbit.Tpo $(DEPDIR)/openrabbit-rabbit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabbit.c' object='openrabbit-rabbit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabbit.o `test -f 'rabbit.c' || echo '$(srcdir)/'`rabbit.c
+
+openrabbit-rabbit.obj: rabbit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabbit.obj -MD -MP -MF $(DEPDIR)/openrabbit-rabbit.Tpo -c -o openrabbit-rabbit.obj `if test -f 'rabbit.c'; then $(CYGPATH_W) 'rabbit.c'; else $(CYGPATH_W) '$(srcdir)/rabbit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabbit.Tpo $(DEPDIR)/openrabbit-rabbit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabbit.c' object='openrabbit-rabbit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabbit.obj `if test -f 'rabbit.c'; then $(CYGPATH_W) 'rabbit.c'; else $(CYGPATH_W) '$(srcdir)/rabbit.c'; fi`
+
+openrabbit-rabdata.o: rabdata.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabdata.o -MD -MP -MF $(DEPDIR)/openrabbit-rabdata.Tpo -c -o openrabbit-rabdata.o `test -f 'rabdata.c' || echo '$(srcdir)/'`rabdata.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabdata.Tpo $(DEPDIR)/openrabbit-rabdata.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabdata.c' object='openrabbit-rabdata.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabdata.o `test -f 'rabdata.c' || echo '$(srcdir)/'`rabdata.c
+
+openrabbit-rabdata.obj: rabdata.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabdata.obj -MD -MP -MF $(DEPDIR)/openrabbit-rabdata.Tpo -c -o openrabbit-rabdata.obj `if test -f 'rabdata.c'; then $(CYGPATH_W) 'rabdata.c'; else $(CYGPATH_W) '$(srcdir)/rabdata.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabdata.Tpo $(DEPDIR)/openrabbit-rabdata.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabdata.c' object='openrabbit-rabdata.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabdata.obj `if test -f 'rabdata.c'; then $(CYGPATH_W) 'rabdata.c'; else $(CYGPATH_W) '$(srcdir)/rabdata.c'; fi`
+
+openrabbit-rabio.o: rabio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabio.o -MD -MP -MF $(DEPDIR)/openrabbit-rabio.Tpo -c -o openrabbit-rabio.o `test -f 'rabio.c' || echo '$(srcdir)/'`rabio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabio.Tpo $(DEPDIR)/openrabbit-rabio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabio.c' object='openrabbit-rabio.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabio.o `test -f 'rabio.c' || echo '$(srcdir)/'`rabio.c
+
+openrabbit-rabio.obj: rabio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabio.obj -MD -MP -MF $(DEPDIR)/openrabbit-rabio.Tpo -c -o openrabbit-rabio.obj `if test -f 'rabio.c'; then $(CYGPATH_W) 'rabio.c'; else $(CYGPATH_W) '$(srcdir)/rabio.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabio.Tpo $(DEPDIR)/openrabbit-rabio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabio.c' object='openrabbit-rabio.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabio.obj `if test -f 'rabio.c'; then $(CYGPATH_W) 'rabio.c'; else $(CYGPATH_W) '$(srcdir)/rabio.c'; fi`
+
+openrabbit-rabmap.o: rabmap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabmap.o -MD -MP -MF $(DEPDIR)/openrabbit-rabmap.Tpo -c -o openrabbit-rabmap.o `test -f 'rabmap.c' || echo '$(srcdir)/'`rabmap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabmap.Tpo $(DEPDIR)/openrabbit-rabmap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabmap.c' object='openrabbit-rabmap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabmap.o `test -f 'rabmap.c' || echo '$(srcdir)/'`rabmap.c
+
+openrabbit-rabmap.obj: rabmap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -MT openrabbit-rabmap.obj -MD -MP -MF $(DEPDIR)/openrabbit-rabmap.Tpo -c -o openrabbit-rabmap.obj `if test -f 'rabmap.c'; then $(CYGPATH_W) 'rabmap.c'; else $(CYGPATH_W) '$(srcdir)/rabmap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/openrabbit-rabmap.Tpo $(DEPDIR)/openrabbit-rabmap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rabmap.c' object='openrabbit-rabmap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openrabbit_CFLAGS) $(CFLAGS) -c -o openrabbit-rabmap.obj `if test -f 'rabmap.c'; then $(CYGPATH_W) 'rabmap.c'; else $(CYGPATH_W) '$(srcdir)/rabmap.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -567,12 +656,12 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/myio.Po
-	-rm -f ./$(DEPDIR)/openrabbit.Po
-	-rm -f ./$(DEPDIR)/rabbit.Po
-	-rm -f ./$(DEPDIR)/rabdata.Po
-	-rm -f ./$(DEPDIR)/rabio.Po
-	-rm -f ./$(DEPDIR)/rabmap.Po
+		-rm -f ./$(DEPDIR)/openrabbit-myio.Po
+	-rm -f ./$(DEPDIR)/openrabbit-openrabbit.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabbit.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabdata.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabio.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabmap.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -618,12 +707,12 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/myio.Po
-	-rm -f ./$(DEPDIR)/openrabbit.Po
-	-rm -f ./$(DEPDIR)/rabbit.Po
-	-rm -f ./$(DEPDIR)/rabdata.Po
-	-rm -f ./$(DEPDIR)/rabio.Po
-	-rm -f ./$(DEPDIR)/rabmap.Po
+		-rm -f ./$(DEPDIR)/openrabbit-myio.Po
+	-rm -f ./$(DEPDIR)/openrabbit-openrabbit.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabbit.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabdata.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabio.Po
+	-rm -f ./$(DEPDIR)/openrabbit-rabmap.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
