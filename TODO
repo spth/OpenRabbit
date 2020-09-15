@@ -1,7 +1,3 @@
-- Get it working, make 0.1.2 release.
-- Merge coldboot branch (for free coldload.bin), make 0.2.0 release.
-- Do some minor polishing (coldload.s, the program itself), make 0.2.1 release.
-
 - Translate pilot.c to SDCC
 - proper error handling (instead of exiting we should retry and/or report)
 - implement the watch window 
