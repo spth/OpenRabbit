@@ -1,4 +1,4 @@
-2020-?-?	v0.2.0
+2020-09-15	v0.2.0
 Build own coldload.bin. Use Dynamic C 9 pilot.bin format instead of Dynamic C 8 one. Drop unused RFU arguments.
 
 2020-09-14	v0.1.2
