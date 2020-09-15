@@ -3,6 +3,8 @@ noinst_PROGRAMS = makecold
 
 makecold_SOURCES = makecold.cpp
 
+EXTRA_DIST = coldload.s
+
 coldload.bin: coldload.no3.bin makecold
 	rm -f coldload.bin
 	./makecold coldload.no3.bin $@

@@ -1,4 +1,5 @@
 bin_PROGRAMS = openrabbit
+dist_bin_SCRIPTS = openrabbitfu
 openrabbit_SOURCES = openrabbit.c myio.c rabbit.c rabdata.c rabio.c rabmap.c
 
 # set the include path found by configure
