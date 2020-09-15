@@ -2,7 +2,13 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 
-SUBDIRS = src
+if ENABLE_COLDBOOT
+  COLDBOOT = coldboot
+else
+  COLDBOOT =
+endif
+
+SUBDIRS = src $(COLDBOOT)
 
 dist_doc_DATA = README ChangeLog
 

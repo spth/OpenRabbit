@@ -1,24 +1,15 @@
-CXX = g++
-SDCC = sdcc
-ASRAB = sdasrab
+data_DATA = coldload.bin
+noinst_PROGRAMS = makecold
 
-.PHONY: all clean
-
-all: coldload.bin
-
-clean:
-	rm -f *.rel *.ihx *.noi *.map *.lk coldload.no3.bin
-
-makecold: makecold.cpp
-	$(CXX) makecold.cpp -o $@
+makecold_SOURCES = makecold.cpp
 
 coldload.bin: coldload.no3.bin makecold
 	rm -f coldload.bin
 	./makecold coldload.no3.bin $@
-	
+
 coldload.no3.bin: coldload.ihx
 	objcopy --input-target=ihex --output-target=binary coldload.ihx $@
-	
+
 coldload.ihx: coldload.rel
 	$(SDCC) -mr2k --no-std-crt0 --code-loc 0x0 coldload.rel || true
 	
