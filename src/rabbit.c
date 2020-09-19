@@ -152,28 +152,30 @@ char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void 
 	return(1);
 }
 
-char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
+// Returns 0 on success, -1 on error, 1 on nak.
+int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 	_TC_PacketFooter tcpf;
 	uint8_t framing;
 	uint16_t csum;
 	char *b;
+	bool nak = false;
 
 	// get frame start
 	if(dread(tty, &framing, sizeof(framing)) < (ssize_t)sizeof(framing)) {
 		perror("read(framing) < sizeof(framing)");
-		return(1);
+		return(0);
 	}
 	 
 	// check framing
 	if(framing != TC_FRAMING_START) {
 		fprintf(stderr, "warning: framing failure, got 0x%02x\n", framing);
-		return(1);
+		return(0);
 	}
 
 	// get frame header
 	if(rabbit_sread(tty, tcph, TC_HEADER_SIZE) < (ssize_t)TC_HEADER_SIZE) {
 		perror("read(tcph) < TC_HEADER_SIZE");
-		return(0);
+		return(-1);
 	}
 
 	// calculate frame checksum
@@ -182,13 +184,13 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 	// check checksum
 	if(csum != tcph->header_checksum) {
 		fprintf(stderr, "error: header checksum mismatch 0x%02x != 0x%02x\n", csum, tcph->header_checksum);
-		return(0);
+		return(-1);
 	}
 
 	// check for nak
 	if(tcph->subtype & TC_NAK) {
-		fprintf(stderr, "error: received NAK for subtype 0x%02x\n", tcph->subtype);
-		return(0);
+		fprintf(stderr, "warning: received NAK for subtype 0x%02x\n", tcph->subtype);
+		nak = true;
 	}
 
 	// remove NAK and ACK shit
@@ -205,7 +207,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 		// read data
 		if(rabbit_sread(tty, b, tcph->length) < tcph->length) {
 			perror("read(b) < tcph->length");
-			return(0);
+			return(-1);
 		}
 
 		// calculate data checksum
@@ -235,23 +237,26 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 	// get frame footer
 	if(rabbit_sread(tty, &tcpf, sizeof(tcpf)) < (ssize_t)sizeof(tcpf)) {
 		perror("read(tcpf) < sizeof(tcpf)");
-		return(0);
+		return(-1);
 	}
 
 	// check checksum
 	if(csum != tcpf.checksum) {
 		fprintf(stderr, "error: data checksum mismatch 0x%02x != 0x%02x\n", csum, tcpf.checksum);
-		return(0);
+		return(-1);
 	}
 
-	return(1);
+	return(nak);
 }
 
-char rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data) {
+// Returns 0 on success, -1 on error, 1 on nak.
+int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data) {
 	_TC_PacketHeader tcph;
+	int ret;
 
 	// poll rabbit
-	if(!rabbit_poll(tty, &tcph, length, data)) return(0);
+	if((ret = rabbit_poll(tty, &tcph, length, data)) < 0)
+		return(-1);
 
 	// check type
 	if(type != tcph.type) {
@@ -263,7 +268,7 @@ char rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *
 		fprintf(stderr, "warning: subtype mismatch 0x%02x != 0x%02x\n", subtype, tcph.subtype);
 	}
 	
-	return(1);
+	return(ret);
 }
 
 int rabbit_triplet(int tty, const unsigned char triplet[3]) {
@@ -465,8 +470,8 @@ int rabbit_upload(int tty, const char *project) {
 	int sz, i, l;
 	int rs, ws;
 
-	// request baudrate up - todo: Try with 460800 instead of 230400. However, some slow Rabbits will NACK this. Todo: Handle NACK, retry with halfed baudrate.
-	baudrate = dc8pilot ? 115200 : 230400;
+	// Request baudrate up (host side).
+	baudrate = dc8pilot ? 115200 : 460800;
 
 	while(tty_setbaud(tty, baudrate)) { // Find maximum baudrate on our side.
 		baudrate /= 2;
@@ -477,11 +482,22 @@ int rabbit_upload(int tty, const char *project) {
 	}
 	tty_setbaud(tty, 57600); // Go back to lower speed to tell Rabbit to increase speed.
 
-	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, sizeof(baudrate), &baudrate))
-		return(-1);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, 0, NULL))
-		return(-1);
-	
+	// Request baudrate up (Rabbit side).
+	for(;;) { // Find maximum baudrate on Rabbit side.
+		if(baudrate < 57600) {
+			fprintf(stderr, "Failed to set baudrate for Rabbit port.\n");
+			return(-1);
+		}
+
+		if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, sizeof(baudrate), &baudrate))
+			return(-1);
+		int r = rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, 0, NULL);
+		if(r < 0)
+			return(-1);
+		else if(!r)
+			break;
+		baudrate /= 2;
+	}
 
 	// Finally switch to higher speed.
 	if(tty_setbaud(tty, baudrate))
@@ -490,7 +506,7 @@ int rabbit_upload(int tty, const char *project) {
 	// probe for information
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_INFOPROBE, 0, NULL))
 		return(-1);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_INFOPROBE, sizeof(b), &b))
+	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_INFOPROBE, sizeof(b), &b))
 		return(-1);
 	rabbit_parse_info(&info, &b);
 
@@ -508,7 +524,7 @@ int rabbit_upload(int tty, const char *project) {
 	flashdata.writeMode = 1;	// just a byte
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_FLASHDATA, sizeof(flashdata), &flashdata))
 		return(-1);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_FLASHDATA, 0, NULL))
+	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_FLASHDATA, 0, NULL))
 		return(-1);
 
 	// load project.bin
@@ -519,7 +535,7 @@ int rabbit_upload(int tty, const char *project) {
 	flash = WP_DATA_SIZE+sz;
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_ERASEFLASH, sizeof(flash), &flash))
 		return(-1);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_ERASEFLASH, 0, NULL))
+	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_ERASEFLASH, 0, NULL))
 		return(-1);
 
 	// allocate memory
@@ -548,7 +564,7 @@ int rabbit_upload(int tty, const char *project) {
 		// write packet
 		if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, TC_SYSTEM_WRITE_HEADERSIZE+l, wp))
 			return(-1);
-		if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, 0, NULL))
+		if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, 0, NULL))
 			return(-1);
 	}
 
@@ -574,7 +590,8 @@ char rabbit_debug(int tty) {
 	// ping her once
 	fprintf(stderr, "ping?\n");
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL)) return(0);
+	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_NOOP, 0, NULL))
+		return(0);
 	fprintf(stderr, "pong!\n");
 
 	fprintf(stderr, "configure debug mode\n");
@@ -582,17 +599,21 @@ char rabbit_debug(int tty) {
 	// set debug tag
 	debugtag = 0x82;
 	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_SETDEBUGTAG, sizeof(debugtag), &debugtag)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_SETDEBUGTAG, 0, NULL)) return(0);
+	if(rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_SETDEBUGTAG, 0, NULL))
+		return(0);
 
 	// set send flags
 	sendflags = 0x08;
 	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_SETSENDFLAGS, sizeof(sendflags), &sendflags)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_SETSENDFLAGS, 0, NULL)) return(0);
+	if(rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_SETSENDFLAGS, 0, NULL))
+		return(0);
 
 	// start from begin
 	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_STARTPROGRAM, 0, NULL)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_REGDATA, 0, NULL)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_STARTPROGRAM, 0, NULL)) return(0);
+	if(rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_REGDATA, 0, NULL))
+		return(0);
+	if(rabbit_read(tty, TC_TYPE_DEBUG, TC_DEBUG_STARTPROGRAM, 0, NULL))
+		return(0);
 
 	return(1);
 }

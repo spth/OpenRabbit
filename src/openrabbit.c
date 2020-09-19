@@ -575,7 +575,7 @@ int main(int argc, char **argv) {
 		// data?
 		if(FD_ISSET(tty, &readfs)) {
 			// listen to her
-			if(!rabbit_poll(tty, &tcph, sizeof(b), b)) goto main_abort;
+			if(rabbit_poll(tty, &tcph, sizeof(b), b)) goto main_abort;
 
 			// debug?
 			if(tcph.type == TC_TYPE_DEBUG) switch(tcph.subtype) {

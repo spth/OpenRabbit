@@ -30,8 +30,8 @@
 int rabbit_reset(int tty);
 int rabbit_open(const char *device);
 char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
-char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data);
-char rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
+int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data);
+int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
 int rabbit_coldload(int tty, const char *file);
 int rabbit_pilot(int tty, const char *pfile);
 int rabbit_upload(int tty, const char *project);

@@ -164,7 +164,7 @@ typedef struct {
 typedef struct {
 	char		start_mode;					// how the real bios should be started
 #define TC_STARTBIOS_RAM		0x01	// RAM program - just jump to 0x0000
-#define TC_STARTBIOS_FLASH		0x02	// FLAHS program - remap quad-0 to flash and jump to 0x0000
+#define TC_STARTBIOS_FLASH		0x02	// FLASH program - remap quad-0 to flash and jump to 0x0000
 } _TCSystemSTARTBIOS;
 
 typedef struct {
