@@ -39,6 +39,7 @@
 
 #define RFU_VERSION 0x02
 
+#include "rabbit.h"
 #include "myio.h"
 #include "mytypes.h"
 #include "bios/tc_defs.lib"
@@ -344,7 +345,7 @@ int rabbit_coldload(int tty, const char *file) {
 
 	// Send initial loader.
 	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
-	fprintf(stderr, "sending %d initial loader triplets\n", sz);
+	fprintf(stderr, "sending %d initial loader triplets\n", sz / 3);
 	if(rabbit_triplets(tty, pb, sz / 3)) {
 		free(pb);
 		return(-1);

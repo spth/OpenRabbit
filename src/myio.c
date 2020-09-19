@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "myio.h"
+
 // #define DEBUG_COMM
 // #define DEBUG_IO
 

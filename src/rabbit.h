@@ -22,6 +22,9 @@
 #ifndef OPENRABBIT_RABBIT_H
 #define OPENRABBIT_RABBIT_H 1
 
+#include "mytypes.h"
+#include "bios/tc_defs.lib"
+
 int rabbit_reset(int tty);
 int rabbit_open(const char *device);
 char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data);
