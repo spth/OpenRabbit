@@ -29,8 +29,6 @@ SADR          .equ 0xc0      ; Serial Port A Data Register
 SASR          .equ 0xc3      ; Serial Port A Status Register
 SACR          .equ 0xc4      ; Serial Port A Control Register
 
-;#rcodorg rootcod2 0x0 0x0 0x6000 apply
-
 .area _CODE
 
 premain::
@@ -130,13 +128,13 @@ delay_loop:
 	call	_get_byte
 	ld	b, a                         ; pilot BIOS's begin physical address MSB
 
-	call _get_byte
+	call	_get_byte
 	ld	l, a                         ; pilot BIOS's size LSB
 
-	call _get_byte
+	call	_get_byte
 	ld	h, a                         ; pilot BIOS's size MSB
 
-	call _get_byte
+	call	_get_byte
 	altd
 	ld	a, a                         ; store received checksum in a'
 

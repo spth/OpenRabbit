@@ -144,17 +144,28 @@ load_ret:
 	return(pb);
 }
 
-int tty_setbaud(int tty, int baud) {
+int tty_setbaud(int tty, unsigned long baud) {
 	struct termios newtio;
 	int b;
 
 	// convert baudrate
 	switch(baud) {
-	  case(2400): b = B2400; break;
-		case(57600): b = B57600; break;
-		case(115200): b = B115200; break;
-		case(230400): b = B230400; break;
-		default:
+	case 2400:
+		b = B2400;
+		break;
+	case 57600:
+		b = B57600;
+		break;
+	case 115200:
+		b = B115200;
+		break;
+	case 230400:
+		b = B230400;
+		break;
+	case 460800:
+		b = B460800;
+		break;
+	default:
 			fprintf(stderr, "invalid baud in setbaud(), left unmodified!\n");
 			return(-1);
 	}

@@ -47,6 +47,8 @@
 #include "rabdata.h"
 #include "rabio.h"
 
+bool dc8pilot = false; // Set to true to use a pilot.bin from Dynamic C 8.
+
 int rabbit_reset(int tty) {
 	int s;
 
@@ -249,7 +251,7 @@ char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data) 
 	_TC_PacketHeader tcph;
 
 	// poll rabbit
-	if(! rabbit_poll(tty, &tcph, length, data)) return(0);
+	if(!rabbit_poll(tty, &tcph, length, data)) return(0);
 
 	// check type
 	if(type != tcph.type) {
@@ -383,7 +385,7 @@ int rabbit_pilot(int tty, const char *pfile) {
 	} pilot;
 	int sz, i;
 
-	int pilotoffset = 0; // Old pilot.bin from Dynamic C 8 used 0x6000.
+	int pilotoffset = dc8pilot ? 0x6000 : 0;
 
 	// move baudrate up
 	if(tty_setbaud(tty, 57600))
@@ -452,7 +454,7 @@ int rabbit_upload(int tty, const char *project) {
 	unsigned char *wp = NULL;
 	_TCSystemInfoProbe info;
 	unsigned char b[1024];
-	uint32 baudrate;
+	unsigned long baudrate;
 	struct {
 		uint16 sectorSize;
 		uint16 numSectors;
@@ -463,15 +465,28 @@ int rabbit_upload(int tty, const char *project) {
 	int sz, i, l;
 	int rs, ws;
 
-	// request baudrate up
-	baudrate = 115200;
-	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, sizeof(baudrate), &baudrate)) return(0);
-	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, 0, NULL)) return(0);
+	// request baudrate up - todo: Try with 460800 instead of 230400. However, some slow Rabbits will NACK this. Todo: Handle NACK, retry with halfed baudrate.
+	baudrate = dc8pilot ? 115200 : 230400;
 
-	// move baudrate up
-	if(tty_setbaud(tty, baudrate))
+	while(tty_setbaud(tty, baudrate)) { // Find maximum baudrate on our side.
+		baudrate /= 2;
+		if(baudrate < 57600) {
+			fprintf(stderr, "Failed to set baudrate for host port.\n");
+			return(-1);
+		}
+	}
+	tty_setbaud(tty, 57600); // Go back to lower speed to tell Rabbit to increase speed.
+
+	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, sizeof(baudrate), &baudrate))
+		return(-1);
+	if(!rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_SETBAUDRATE, 0, NULL))
 		return(-1);
 	
+
+	// Finally switch to higher speed.
+	if(tty_setbaud(tty, baudrate))
+		return(-1);
+
 	// probe for information
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_INFOPROBE, 0, NULL))
 		return(-1);
@@ -581,7 +596,7 @@ char rabbit_debug(int tty) {
 
 	return(1);
 }
-
+#include <time.h>
 int rabbit_program(int tty, char *coldload, char *pilot, char *project) {
 	// reset her
 	if(rabbit_reset(tty))

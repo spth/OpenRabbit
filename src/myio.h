@@ -27,7 +27,7 @@
 ssize_t dwrite(int fd, const void *buf, size_t count);
 ssize_t dread(int fd, void *buf, size_t count);
 unsigned char *load(unsigned char *pb, const char *file, int *sz);
-int tty_setbaud(int tty, int baud);
+int tty_setbaud(int tty, unsigned long baud);
 void dtiming(int *rs, int *ws);
 
 extern unsigned long dwrite_count;
