@@ -109,32 +109,32 @@
 
 struct __dkregisters
 {
-	uint16	_sp;
-	uint16	_xpc;
-	uint16	_afPrime;
-	uint16	_bcPrime;
-	uint16	_dePrime;
-	uint16	_hlPrime;
-	uint16	_af;
-	uint16	_bc;
-	uint16	_de;
-	uint16	_hl;
-	uint16	_ix;
-	uint16	_iy;
-	uint8	_ip;
-	uint16	_pc;
+	uint16_t	_sp;
+	uint16_t	_xpc;
+	uint16_t	_afPrime;
+	uint16_t	_bcPrime;
+	uint16_t	_dePrime;
+	uint16_t	_hlPrime;
+	uint16_t	_af;
+	uint16_t	_bc;
+	uint16_t	_de;
+	uint16_t	_hl;
+	uint16_t	_ix;
+	uint16_t	_iy;
+	uint8_t	_ip;
+	uint16_t	_pc;
 };
 
 struct __dkaddress
 {
-	uint16  offset;
-	uint8 xpc;
+	uint16_t  offset;
+	uint8_t xpc;
 };
 
 struct __dkbreakpoint
 {
-	uint32 addr;
+	uint32_t addr;
 	char	 		  flags;
-	int16	 		  (*condition)();
+	int16_t	 		  (*condition)();
 };
 

@@ -22,9 +22,16 @@
 #ifndef OPENRABBIT_RABDATA_H
 #define OPENRABBIT_RABDATA_H 1
 
+#include <stdint.h>
+
+#include "mytypes.h"
+#include "bios/tc_defs.lib"
+
+struct __dkregisters;
+
 #define rabbit_load(var, src) rabbit_getvar(&var, src, sizeof(var))
 
-uint16 rabbit_csum(uint16 initial, uint8 *data, uint16 length);
+uint16_t rabbit_csum(uint16_t initial, uint8_t *data, uint16_t length);
 
 void rabbit_getvar(void *var, const void **src, size_t sz);
 

@@ -21,42 +21,40 @@
 #ifndef _MYTYPES_H
 #define _MYTYPES_H
 
-typedef unsigned char uint8;
-typedef unsigned short int uint16;
-typedef short int int16;
-typedef unsigned int uint32;
-typedef unsigned int faraddr_t;
+#include <stdint.h>
+
+typedef uint32_t faraddr_t;
 
 typedef struct {
-	int16	tableVersion;		// version number for this table layout
-	int16	productID;			// Z-World part #
-	int16	vendorID;			// 1 = Z-World
+	int16_t	tableVersion;		// version number for this table layout
+	int16_t	productID;			// Z-World part #
+	int16_t	vendorID;			// 1 = Z-World
 	char	timestamp[7];		//	YY/M/D H:M:S
-	uint32 flashID;				// Z-World part #
-	int16	flashType;			// Write method
-	int16	flashSize;			// in 1000h pages
-	int16	sectorSize;			// size of flash sector in bytes
-	int16	numSectors;			// number of sectors
-	int16	flashSpeed;			// in nanoseconds
-	uint32 flash2ID;			// Z-World part #, 2nd flash
-	int16	flash2Type;			// Write method, 2nd flash
-	int16	flash2Size;			// in 1000h pages, 2nd flash
-	int16	sector2Size;		// size of 2nd flash's sectors in bytes
-	int16	num2Sectors;		// number of sectors
-	int16	flash2Speed;		// in nanoseconds, 2nd flash
-	uint32 ramID;				// Z-World part #
-	int16	ramSize;				// in 1000h pages
-	int16	ramSpeed;			// in nanoseconds
-	int16	cpuID;				// CPU type identification
-	uint32 crystalFreq;		// in Hertz
+	uint32_t flashID;				// Z-World part #
+	int16_t	flashType;			// Write method
+	int16_t	flashSize;			// in 1000h pages
+	int16_t	sectorSize;			// size of flash sector in bytes
+	int16_t	numSectors;			// number of sectors
+	int16_t	flashSpeed;			// in nanoseconds
+	uint32_t flash2ID;			// Z-World part #, 2nd flash
+	int16_t	flash2Type;			// Write method, 2nd flash
+	int16_t	flash2Size;			// in 1000h pages, 2nd flash
+	int16_t	sector2Size;		// size of 2nd flash's sectors in bytes
+	int16_t	num2Sectors;		// number of sectors
+	int16_t	flash2Speed;		// in nanoseconds, 2nd flash
+	uint32_t ramID;				// Z-World part #
+	int16_t	ramSize;				// in 1000h pages
+	int16_t	ramSpeed;			// in nanoseconds
+	int16_t	cpuID;				// CPU type identification
+	uint32_t crystalFreq;		// in Hertz
 	char	macAddr[6];			// Media Access Control (MAC) address
 	char	serialNumber[24];	// device serial number
 	char	productName[30];	// null-terminated string
 	char	reserved[1];		// reserved for later use -- can grow in size
-	uint32 idBlockSize;		// size of the SysIDBlock struct
-	uint16 userBlockSize;	// size of user block (directly below ID block)
-	uint16 userBlockLoc;	// offset of start of user block from start of ID block
-	int16 idBlockCRC;			// CRC of this block (with this field set to zero)
+	uint32_t idBlockSize;		// size of the SysIDBlock struct
+	uint16_t userBlockSize;	// size of user block (directly below ID block)
+	uint16_t userBlockLoc;	// offset of start of user block from start of ID block
+	int16_t idBlockCRC;			// CRC of this block (with this field set to zero)
 	char	marker[6];			// should be 0x55 0xAA 0x55 0xAA 0x55 0xAA 0x55 0xAA
 } SysIDBlockType;
 

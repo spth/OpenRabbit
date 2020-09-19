@@ -22,13 +22,12 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "mytypes.h"
-#include "bios/tc_defs.lib"
-#include "bios/dkcore.lib"
 #include "rabdata.h"
 
-uint16 rabbit_csum(uint16 initial, uint8 *data, uint16 length) {
-	uint16 a, b;
+#include "bios/dkcore.lib"
+
+uint16_t rabbit_csum(uint16_t initial, uint8_t *data, uint16_t length) {
+	uint16_t a, b;
 	int i;
 
 	// split in a and b

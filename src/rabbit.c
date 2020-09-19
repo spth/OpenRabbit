@@ -95,11 +95,11 @@ int rabbit_open(const char *device) {
 	return(tty);
 }
 
-char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data) {
+char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data) {
 	_TC_PacketHeader tcph;
 	_TC_PacketFooter tcpf;
-	uint8 framing;
-	uint16 csum;
+	uint8_t framing;
+	uint16_t csum;
 		
 	// send frame start
 	framing = TC_FRAMING_START;
@@ -116,7 +116,7 @@ char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data)
 	tcph.length = length;
 
 	// calculate frame checksum
-	csum = rabbit_csum(0, (uint8 *) &tcph, sizeof(tcph)-sizeof(tcph.header_checksum));
+	csum = rabbit_csum(0, (uint8_t *) &tcph, sizeof(tcph)-sizeof(tcph.header_checksum));
 	tcph.header_checksum = csum;
 
 	// send frame header
@@ -126,7 +126,7 @@ char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data)
 	}
 
 	// add checksum to checksum :)
-	csum = rabbit_csum(csum, (uint8 *) &tcph.header_checksum, sizeof(tcph.header_checksum));
+	csum = rabbit_csum(csum, (uint8_t *) &tcph.header_checksum, sizeof(tcph.header_checksum));
 
 	// check for data frame
 	if(data != NULL) {
@@ -152,10 +152,10 @@ char rabbit_write(int tty, uint8 type, uint8 subtype, uint16 length, void *data)
 	return(1);
 }
 
-char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
+char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 	_TC_PacketFooter tcpf;
-	uint8 framing;
-	uint16 csum;
+	uint8_t framing;
+	uint16_t csum;
 	char *b;
 
 	// get frame start
@@ -177,7 +177,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 	}
 
 	// calculate frame checksum
-	csum = rabbit_csum(0, (uint8 *) tcph, TC_HEADER_SIZE-sizeof(tcph->header_checksum));
+	csum = rabbit_csum(0, (uint8_t *) tcph, TC_HEADER_SIZE-sizeof(tcph->header_checksum));
 
 	// check checksum
 	if(csum != tcph->header_checksum) {
@@ -195,7 +195,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 	tcph->subtype &= ~(TC_NAK|TC_ACK);
 
 	// add checksum to checksum :)
-	csum = rabbit_csum(csum, (uint8 *) &tcph->header_checksum, sizeof(tcph->header_checksum));
+	csum = rabbit_csum(csum, (uint8_t *) &tcph->header_checksum, sizeof(tcph->header_checksum));
 
 	// check for data frame
 	if(tcph->length > 0) {
@@ -209,7 +209,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 		}
 
 		// calculate data checksum
-		csum = rabbit_csum(csum,  (uint8 *) b, tcph->length);
+		csum = rabbit_csum(csum,  (uint8_t *) b, tcph->length);
 
 		if(data != NULL) {
 			// report space problem
@@ -247,7 +247,7 @@ char rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16 length, void *data) {
 	return(1);
 }
 
-char rabbit_read(int tty, uint8 type, uint8 subtype, uint16 length, void *data) {
+char rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data) {
 	_TC_PacketHeader tcph;
 
 	// poll rabbit
@@ -354,7 +354,7 @@ int rabbit_coldload(int tty, const char *file) {
 	}
 	free(pb);
 
-	// Tell her we're done with iniital loader.
+	// Tell her we're done with initial loader.
 	if(rabbit_triplets(tty, colddone, sizeof(colddone) / 3)) {
 		free(pb);
 		return(-1);
@@ -376,12 +376,12 @@ int rabbit_coldload(int tty, const char *file) {
 
 int rabbit_pilot(int tty, const char *pfile) {
 	unsigned char *pb = NULL;
-	uint16 csumR, csumU;
-	uint8 csum;
+	uint16_t csumR, csumU;
+	uint8_t csum;
 	struct {
-		uint32 off;
-		uint16 sz;
-		uint8 csum;
+		uint32_t off;
+		uint16_t sz;
+		uint8_t csum;
 	} pilot;
 	int sz, i;
 
@@ -398,7 +398,7 @@ int rabbit_pilot(int tty, const char *pfile) {
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
 	pilot.sz = sz - pilotoffset;
-	for(pilot.csum = 0, i = 0; i < 6; i++) pilot.csum += ((uint8*)&pilot)[i];
+	for(pilot.csum = 0, i = 0; i < 6; i++) pilot.csum += ((uint8_t*)&pilot)[i];
 	if(dwrite(tty, &pilot, 7) < 7) {
 		perror("write(pilot) < sizeof(pilot)");
 		free(pb);
@@ -456,12 +456,12 @@ int rabbit_upload(int tty, const char *project) {
 	unsigned char b[1024];
 	unsigned long baudrate;
 	struct {
-		uint16 sectorSize;
-		uint16 numSectors;
-		uint16 flashSize;
-		uint16 writeMode;	// just a byte
+		uint16_t sectorSize;
+		uint16_t numSectors;
+		uint16_t flashSize;
+		uint16_t writeMode;	// just a byte
 	} flashdata;
-	uint32 flash;
+	uint32_t flash;
 	int sz, i, l;
 	int rs, ws;
 
@@ -558,9 +558,9 @@ int rabbit_upload(int tty, const char *project) {
 }
 
 char rabbit_debug(int tty) {
-	uint16 debugtag;
-	uint8 sendflags;
-	uint8 start;
+	uint16_t debugtag;
+	uint8_t sendflags;
+	uint8_t start;
 
 	fprintf(stderr, "starting the bios\n");
 

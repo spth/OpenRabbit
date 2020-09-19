@@ -160,7 +160,7 @@ void rabbit_regs(struct __dkregisters *regs) {
 }
 
 void rabbit_stack(struct __dkregisters *regs, void *s, int len) {
-	uint16 *stack = s;
+	uint16_t *stack = s;
 	int o, i;
 	for(o = 0, i = 0; o < len; o+=2, i++)
 		mvwprintw(win_stack, i+1, 1, " %04x: %04x", regs->_sp+o, stack[i]);
