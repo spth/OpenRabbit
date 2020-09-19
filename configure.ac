@@ -3,6 +3,8 @@ AC_INIT([openrabbit], [0.2.0])
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 
+AC_CHECK_LIB(serialport, sp_get_port_by_name,,AC_MSG_ERROR([Required library libserialport not found.]))
+
 #AC_ARG_ENABLE(coldboot, AS_HELP_STRING([--disable-coldboot], [Do not build coldboot loader firmware]))
 #AM_CONDITIONAL([OPT_DISABLE_COLDBOOT], [test x$debug = xtrue])
 
@@ -21,7 +23,7 @@ AC_CHECK_PROG(ASRAB,sdasrab,sdasrab, :)
 
 AC_DEFUN([REQUIRE_PROG],
 [if test "$1" = ":"; then
-  AC_MSG_ERROR([Cannot find required program $2.])
+  AC_MSG_ERROR([Required program $2 not found.])
  fi
 ])
 
