@@ -271,7 +271,7 @@ int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 		perror("triplet write < 3");
 		return(-1);
 	}
-	usleep(15000); // Give enough time to send, so we can assume that the triplet has been written once the function returns.
+	tcdrain(tty);
 	return(0);
 }
 
@@ -305,7 +305,7 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 
 	// Processor verifiction sequence.
-	if(rabbit_triplets(tty, pverify, 3)) // Why doesn't this work for the status line? If we omit the 6 bytes for the watchdog, it works!
+	if(rabbit_triplets(tty, pverify, 3))
 		return(-1);
 	usleep(75000);
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
