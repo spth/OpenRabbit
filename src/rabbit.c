@@ -506,7 +506,7 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 		return(-1);
 	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_INFOPROBE, sizeof(b), &b))
 		return(-1);
-	rabbit_parse_info(&info, &b);
+	rabbit_parse_info(&info, dc8pilot ? b : b + 4); // DC9 prepends a 4 byte system id block.
 
 	// show some info
 	fprintf(stderr, "CPU:  0x%04x\n", info.IDBlock.cpuID);

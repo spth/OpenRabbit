@@ -2,7 +2,7 @@ What is OpenRabbit?
 
 A free portable replacement for the Digi Rabbit Field Utility and an on-target debugger. This allows Rabbit development on OSes other than Windows. The on-target debugger currently only works with programs created using the non-free Dynamic C (which can be run .e.g via wine).
 
-A free inital loader (coldload.bin) and secondary loader (pilot.bin) are included in OpenRabbit, but it will also work with loader binary blobs from Dynamic C.
+A free inital loader (coldload.bin) and secondary loader (pilot.bin) are included in OpenRabbit, but it will also work with loader binary blobs from Dynamic C 8 or 9 (use --dc8pilot when using a secondary loader pilot.bin from Dynamic C 8).
 
 Build (including initial loader - requires SDCC):
 
@@ -19,9 +19,6 @@ OpenRabbit supports two modes:
 
 * Rabbit Field utility mode, invoke as "openrabbitfu". Flashing only. Works with files from any source, including SDCC and Dynamic C.
 * OpenRabbit mode, invoke as "openrabbit". Debugging support. Requires files from Dynamic C.
-
-Warning: Openrabbit does not really work yet with the included secondary loader pilot.bin or a secondary loader from Dynamic C 9!
-Use secondary loader pilot.bin from Dynamic C 8 with --dc8pilot option for reliable operation!
 
 Example:
 
