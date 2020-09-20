@@ -35,6 +35,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
 #include <regex.h>
 
 #include "myio.h"
@@ -459,7 +460,7 @@ int main(int argc, char **argv) {
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
-	if(argv > 0 && !strcmp(argv[1], "--dc8pilot")) {
+	if(argc > 0 && !strcmp(argv[1], "--dc8pilot")) {
 		dc8pilot = true;
 		memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
 		argc--;
@@ -597,8 +598,9 @@ int main(int argc, char **argv) {
 					tcsr.address.logical.offset = regs._sp;
 					tcsr.address.logical.xpc = 0;
 					memcpy(b,&tcsr,8);
-					memcpy(b+1,b+2,6);
-				  if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_READ, TC_SYSTEM_READ_HEADERSIZE, b)) goto main_abort;
+					memmove(b+1,b+2,6);
+					if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_READ, TC_SYSTEM_READ_HEADERSIZE, b))
+						goto main_abort;
 					rabbit_regs(&regs);
 					break;
 				case(TC_DEBUG_RUNPROGRAM):

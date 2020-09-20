@@ -106,21 +106,22 @@ unsigned char *load(unsigned char *pb, const char *file, int *sz) {
 	// open file
 	if((fd = open(file, O_RDONLY)) < 0) {
 		perror(file);
-		if(pb != NULL) free(pb);
+		if(pb)
+			free(pb);
 		return(NULL);
 	}
 
 	// get size
 	if(fstat(fd, &s) < 0) {
 		perror(file);
-		if(pb != NULL) free(pb);
+		if(pb)
+			free(pb);
 		goto load_ret;
 	}
 
 	// allocate memory
-	if((pb = realloc(pb, s.st_size)) == NULL) {
+	if(!(pb = realloc(pb, s.st_size))) {
 		perror(file);
-		if(pb != NULL) free(pb);
 		goto load_ret;
 	}
 
@@ -130,7 +131,8 @@ unsigned char *load(unsigned char *pb, const char *file, int *sz) {
 	// check amount
 	if(r < s.st_size) {
 		perror(file);
-		if(pb != NULL) free(pb);
+		if(pb)
+			free(pb);
 		goto load_ret;
 	}
 
@@ -166,8 +168,8 @@ int tty_setbaud(int tty, unsigned long baud) {
 		b = B460800;
 		break;
 	default:
-			fprintf(stderr, "invalid baud in setbaud(), left unmodified!\n");
-			return(-1);
+		fprintf(stderr, "invalid baud in setbaud(), left unmodified!\n");
+		return(-1);
 	}
   
 	// setup port
@@ -184,7 +186,7 @@ int tty_setbaud(int tty, unsigned long baud) {
 	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0)
 		return(-1);
 
-	fprintf(stderr, "set baudrate to %d\n", baud);
+	fprintf(stderr, "set baudrate to %lu\n", baud);
 
 	// give other end time
 	usleep(100000);
