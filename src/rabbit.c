@@ -312,7 +312,7 @@ int rabbit_coldload(int tty, const char *file) {
 	// Processor verifiction sequence.
 	if(rabbit_triplets(tty, pverify, 3))
 		return(-1);
-	usleep(75000);
+	usleep(100000);
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
 		free(pb);
@@ -321,7 +321,7 @@ int rabbit_coldload(int tty, const char *file) {
 	pverify_failed += (s & TIOCM_DSR);
 	if(rabbit_triplets(tty, pverify + 9, 1))
 		return(-1);
-	usleep(75000);
+	usleep(100000);
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
 		free(pb);
@@ -337,7 +337,7 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 	}
 
-	usleep (75000);
+	usleep (100000);
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
@@ -365,7 +365,7 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 	}
 
-	usleep (75000);
+	usleep (100000);
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
