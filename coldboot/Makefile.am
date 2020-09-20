@@ -5,18 +5,20 @@ makecold_SOURCES = makecold.cpp
 
 EXTRA_DIST = coldload.s
 
+MOSTLYCLEANFILES = *.rel *.lk *.noi *.map *.ihx coldload.no3.bin
+
 coldload.bin: coldload.no3.bin makecold
 	rm -f coldload.bin
 	./makecold coldload.no3.bin $@
 
 coldload.no3.bin: coldload.ihx
-	objcopy --input-target=ihex --output-target=binary coldload.ihx $@
+	objcopy --input-target=ihex --output-target=binary $< $@
 
 coldload.ihx: coldload.rel
-	$(SDCC) -mr2k --no-std-crt0 --code-loc 0x0 coldload.rel || true
+	$(SDCC) -mr2k --no-std-crt0 --code-loc 0x0 $< || true
 	
 coldload.rel: coldload.s
-	$(ASRAB) -o coldload.s
+	$(ASRAB) -o $@ $<
 
 # TODO: Modify pilot.c to make it actually compileable with SDCC
 pilot.bin: pilot.c
