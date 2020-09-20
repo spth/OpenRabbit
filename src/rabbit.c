@@ -129,7 +129,7 @@ char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void 
 	csum = rabbit_csum(csum, (uint8_t *) &tcph.header_checksum, sizeof(tcph.header_checksum));
 
 	// check for data frame
-	if(data != NULL) {
+	if(data) {
 		// write data
 		if(rabbit_swrite(tty, data, length) < length) {
 			perror("write(data) < length");
@@ -276,7 +276,7 @@ int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 		perror("triplet write < 3");
 		return(-1);
 	}
-	tcdrain(tty);
+	tcdrain(tty); // Ensure the triplet has actually been sent. We used to do this with an usleep(15000) instead, but using tcdrain() is faster. However, apparently tcdrain() doesn't work reliably with PL2303.
 	return(0);
 }
 
@@ -556,7 +556,7 @@ int rabbit_upload(int tty, const char *project) {
 		((_TCSystemWRITE*)wp)->address.physical = WP_DATA_ORG + i;
 		
 		// fix alignment
-		memcpy(wp+1, wp+2, 6);
+		memmove(wp+1, wp+2, 6);
 
 		// store data
 		memcpy(wp+TC_SYSTEM_WRITE_HEADERSIZE, pb+i, l);
