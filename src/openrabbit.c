@@ -460,7 +460,7 @@ int main(int argc, char **argv) {
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
-	if(argc > 0 && !strcmp(argv[1], "--dc8pilot")) {
+	if(argc > 1 && !strcmp(argv[1], "--dc8pilot")) {
 		dc8pilot = true;
 		memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
 		argc--;
