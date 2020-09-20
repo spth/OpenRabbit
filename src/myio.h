@@ -19,8 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef OPENRABBIT__MYIO_C
-#define OPENRABBIT_MYIO_C 1
+#ifndef OPENRABBIT_MYIO_H
+#define OPENRABBIT_MYIO_H 1
 
 #include <unistd.h>
 

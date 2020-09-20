@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _RABIO_H
-#define _RABIO_H
+#ifndef OPENRABBIT_RABIO_H
+#define OPENRABBIT_RABIO_H 1
 
 ssize_t rabbit_swrite(int tty, void *data, size_t length);
 ssize_t rabbit_sread(int tty, void *data, size_t length);

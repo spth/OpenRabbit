@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _MYTYPES_H
-#define _MYTYPES_H
+#ifndef OPENRABBIT_MYTYPES_H
+#define OPENRABBIT_MYTYPES_H
 
 #include <stdint.h>
 

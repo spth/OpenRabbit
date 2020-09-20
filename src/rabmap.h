@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _RABMAP_H
-#define _RABMAP_H
+#ifndef OPENRABBIT_RABMAP_H
+#define OPENRABBIT_RABMAP_H 1
 
 char rabbit_map_load(char *mapname);
 

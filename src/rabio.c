@@ -72,10 +72,10 @@ ssize_t rabbit_sread(int tty, void *data, size_t length) {
 		}
 	}
 #ifdef DEBUG_COMM
-  fprintf(stderr, "read %d bytes\n", c);
+	fprintf(stderr, "read %d bytes\n", c);
 #endif
 #ifdef DEBUG_IO
-  write(1, buf, c);
+	write(1, buf, c);
 #endif
 	return(c);
 }
