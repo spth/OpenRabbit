@@ -1,5 +1,5 @@
-????-??-??	v0.2.1
-Improve speed.
+2020-09-20	v0.2.1
+Improve speed. Command-line option for Dynamic C 8 pilot.bin format.
 
 2020-09-15	v0.2.0
 Build own coldload.bin. Use Dynamic C 9 pilot.bin format instead of Dynamic C 8 one. Drop unused RFU arguments.

@@ -47,8 +47,6 @@
 #include "rabdata.h"
 #include "rabio.h"
 
-bool dc8pilot = false; // Set to true to use a pilot.bin from Dynamic C 8.
-
 int rabbit_reset(int tty) {
 	int s;
 
@@ -379,7 +377,7 @@ int rabbit_coldload(int tty, const char *file) {
 	return(0);
 }
 
-int rabbit_pilot(int tty, const char *pfile) {
+int rabbit_pilot(int tty, const char *pfile, bool dc8pilot) {
 	unsigned char *pb = NULL;
 	uint16_t csumR, csumU;
 	uint8_t csum;
@@ -454,7 +452,7 @@ int rabbit_pilot(int tty, const char *pfile) {
 	return(0);
 }
 
-int rabbit_upload(int tty, const char *project) {
+int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	unsigned char *pb = NULL;
 	unsigned char *wp = NULL;
 	_TCSystemInfoProbe info;
@@ -618,7 +616,7 @@ char rabbit_debug(int tty) {
 	return(1);
 }
 #include <time.h>
-int rabbit_program(int tty, char *coldload, char *pilot, char *project) {
+int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool dc8pilot) {
 	// reset her
 	if(rabbit_reset(tty))
 		return(-1);
@@ -628,11 +626,11 @@ int rabbit_program(int tty, char *coldload, char *pilot, char *project) {
 		return(-1);
 
 	// load pilot
-	if(rabbit_pilot(tty, pilot))
+	if(rabbit_pilot(tty, pilot, dc8pilot))
 		return(-1);
 
 	// load project
-	if(rabbit_upload(tty, project))
+	if(rabbit_upload(tty, project, dc8pilot))
 		return(-1);
 
 	return(0);

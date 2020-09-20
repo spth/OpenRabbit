@@ -15,12 +15,19 @@ Build (without initial loader):
 
 Use:
 
-Alternatively, OpenRabbit also works with the coldload.bin from Dynmaic C 8 or 9, the pilot.bin from Dynamic C 9 (and the pilot.bin from Dynamic C 8 if pilotoffset is adjusted in rabbit.c).
-
 OpenRabbit supports two modes:
 
 * Rabbit Field utility mode, invoke as "openrabbitfu". Flashing only. Works with files from any source, including SDCC and Dynamic C.
 * OpenRabbit mode, invoke as "openrabbit". Debugging support. Requires files from Dynamic C.
+
+Warning: The Openrabbit does not really work yet with the included secondary loader pilot.bin or a secondary loader from Dynamic C 9!
+Use secondary loader pilot.bin from Dynamic C 8 with --dc8pilot option for reliable operation!
+
+Example:
+
+openrabbitfu --dc8pilot coldload.bin pilot.bin user.bin /dev/ttyUSB0
+
+Will upload the user program user.bin onto the target via cable attached to /dev/ttyUSB0 and using initial loader coldload.bin, secondary loader pilot.bin (with the secondary loader in Dynamic C 8 format).
 
 History:
 

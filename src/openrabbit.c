@@ -453,15 +453,22 @@ int main(int argc, char **argv) {
 	int key;
 	int tty;
 	int i,c;
+	bool dc8pilot = false;
 
 	// are we the just the rfu?
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
+	if(argv > 0 && !strcmp(argv[1], "--dc8pilot")) {
+		dc8pilot = true;
+		memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+		argc--;
+	}
+
 	// check argument count
 	if(argc != (rfu ? 5 : 8)) {
-		fprintf(stderr, "Usage: openrabbitfu <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
-		fprintf(stderr, "Usage: openrabbit <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+		fprintf(stderr, "Usage: openrabbitfu [dc8pilot] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+		fprintf(stderr, "Usage: openrabbit [dc8pilot] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 		return(1);
 	}
 
@@ -479,7 +486,7 @@ int main(int argc, char **argv) {
 	}
 
 	// program the damn thing
-	if(rabbit_program(tty, argv[1], argv[2], argv[3])) {
+	if(rabbit_program(tty, argv[1], argv[2], argv[3], dc8pilot)) {
 		close(tty);
 		return(3);
 	}

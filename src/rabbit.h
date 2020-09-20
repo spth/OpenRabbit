@@ -33,11 +33,13 @@ char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void 
 int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data);
 int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
 int rabbit_coldload(int tty, const char *file);
-int rabbit_pilot(int tty, const char *pfile);
-int rabbit_upload(int tty, const char *project);
+int rabbit_pilot(int tty, const char *pfile, bool dc8pilot);
+int rabbit_upload(int tty, const char *project, bool dc8pilot);
 char rabbit_boot(int tty, char *coldload, char *pilot, char *project);
 char rabbit_debug(int tty);
-int rabbit_program(int tty, char *coldload, char *pilot, char *project);
+
+// Load program into Rabbit. Use tty for serial device, coldload for initial loder filename, pilot for secondary loader filename, project for user program filename, dc8pilot indicates that the secondary loader is Dynamic C 8-style instead of Dynamic C 9.
+int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool dc8pilot);
 
 #endif
 
