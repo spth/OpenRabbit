@@ -105,7 +105,7 @@ delay_loop:
 	ld	(TACSR), a                   ; enable timer A with cpuclk/2
 	xor	a, a
 	ioi
-	ld	(SACR), a                    ; set serial port A async, 8 bit, pport C input
+	ld	(SACR), a                    ; set serial port A async, 8 bit, port C input
 	ld	a, #0x51
 	ioi
 	ld	(WDTTR), a                   ; disable the watchdog timer
