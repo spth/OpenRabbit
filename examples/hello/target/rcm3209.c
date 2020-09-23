@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "../r2k.h"
+#include "r2k.h"
 
 #define GCDR_VALUE	0x03	// clock doubler for base 22MHz clock on R3K
 #define MB0CR_VALUE	0x80
@@ -10,9 +10,8 @@
 
 // WIP: If we set the MBxCR values elsewhere, we could keep one copy of
 // this code.
-void dummy(void) {
+void target_init(void) __naked {
 __asm
-target_init::
 	ld	a, #MB0CR_VALUE
 	ioi
 	ld	(_MB0CR), a
