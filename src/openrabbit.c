@@ -439,8 +439,8 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stderr, "Usage: openrabbitfu [--help] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
-	fprintf(stderr, "Usage: openrabbit [--help] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stderr, "Usage: openrabbitfu [--help] [--verbose] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+	fprintf(stderr, "Usage: openrabbit [--help] [--verbose] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 }
 
 int main(int argc, char **argv) {
@@ -461,6 +461,7 @@ int main(int argc, char **argv) {
 	int i,c;
 	bool dc8pilot;
 	bool run = false;
+	int verbose = 0;
 
 	// are we the just the rfu?
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
@@ -468,9 +469,15 @@ int main(int argc, char **argv) {
 
 	// Handle options
 	while(argc > 1) {
+		if (strncmp(argv[1], "--", 2))
+			break;
+
 		if (!strcmp(argv[1], "--help")) {
 			usage(stdout);
 			return(0);
+		}
+		else if (!strcmp(argv[1], "--verbose")) {
+			verbose++;
 		}
 		else if (!strcmp(argv[1], "--run")) {
 			if(!rfu) {
@@ -478,11 +485,15 @@ int main(int argc, char **argv) {
 				return(-1);
 			}
 			run = true;
-			memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
-			argc--;
 		}
-		else
-			break;
+		else {
+			fprintf(stderr, "Unknown option: %s\n", argv[1]);
+			usage(stderr);
+			return(-1);
+		}
+
+		memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+		argc--;
 	}
 
 	// check non-option argument count
