@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
    if(x>=32768)
    	printf("warning:  input file may have been too long\n");
 
-   printf("output file successfully created (%d bytes)\n",
-   	x*3+sizeof(start_sequence)-1);
+   printf("output file successfully created (%u bytes)\n",
+   	(int)(x * 3 + sizeof(start_sequence) - 1));
    return 0;
 }
