@@ -47,6 +47,8 @@
 #include "rabbit.h"
 #include "rabmap.h"
 
+int verbose = 0;
+
 WINDOW *win_watch;
 WINDOW *win_stack;
 WINDOW *win_regs;
@@ -370,7 +372,7 @@ char rabbit_brk_load(char *filename, char *drive, char *mount) {
 	memset(&regex, 0, sizeof(regex_t));
 	if(regcomp(&regex, "^(.*)\\(\\[([0-9]*),([0-9]*)\\],\\[([0-9]*),([0-9]*)\\]@\\[([0-9]*),([0-9]*)\\]\\)\\->(.*):([0-9a-fA-F]*)\r?$", REG_EXTENDED) != 0) {
 		fprintf(stderr, "regcomp() failed\n");
-    regfree(&regex);
+	regfree(&regex);
    	return 0;
 	}
 
@@ -433,7 +435,7 @@ char rabbit_brk_load(char *filename, char *drive, char *mount) {
 	// success
 	err = 1;
 rabbit_brk_load_abort:
-  regfree(&regex);
+	regfree(&regex);
 	free(pb);
 	return(err);
 }
@@ -461,7 +463,6 @@ int main(int argc, char **argv) {
 	int i,c;
 	bool dc8pilot;
 	bool run = false;
-	int verbose = 0;
 
 	// are we the just the rfu?
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))

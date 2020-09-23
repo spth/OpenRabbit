@@ -26,6 +26,8 @@
 
 #include "bios/dkcore.lib"
 
+extern int verbose;
+
 uint16_t rabbit_csum(uint16_t initial, uint8_t *data, uint16_t length) {
 	uint16_t a, b;
 	int i;
@@ -92,7 +94,8 @@ void rabbit_parse_info(_TCSystemInfoProbe *info, const void *src) {
 	rabbit_load(info->IDBlock.idBlockCRC, &src);
 	rabbit_load(info->IDBlock.marker, &src);
 
-	fprintf(stderr, "parsed %td bytes\n", (const char *)src - b);
+	if(verbose > 1)
+		fprintf(stderr, "parsed %td bytes\n", (const char *)src - b);
 }
 
 void rabbit_parse_registers(struct __dkregisters *regs, const void *src) {

@@ -47,6 +47,8 @@
 #include "rabdata.h"
 #include "rabio.h"
 
+extern int verbose;
+
 int rabbit_reset(int tty) {
 	int s;
 
@@ -56,7 +58,8 @@ int rabbit_reset(int tty) {
 		return(-1);
 	}
 
-	fprintf(stderr, "reset rabbit\n");
+	if(verbose)
+		fprintf(stderr, "Reset Rabbit.\n");
 
 	// Assert DTR (i.e drive /reset low)
 	s |= TIOCM_DTR;
@@ -187,7 +190,8 @@ int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 
 	// check for nak
 	if(tcph->subtype & TC_NAK) {
-		fprintf(stderr, "warning: received NAK for subtype 0x%02x\n", tcph->subtype);
+		if(verbose > 1)
+			fprintf(stderr, "warning: received NAK for subtype 0x%02x\n", tcph->subtype);
 		nak = true;
 	}
 
@@ -307,6 +311,8 @@ int rabbit_coldload(int tty, const char *file) {
 		return(-1);
 	}
 
+	fprintf(stderr, "Sending initial loader.\n");
+
 	// Set baudrate.
 	if(tty_setbaud(tty, 2400))
 		return(-1);
@@ -354,7 +360,8 @@ int rabbit_coldload(int tty, const char *file) {
 
 	// Send initial loader.
 	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
-	fprintf(stderr, "sending %d initial loader triplets\n", sz / 3);
+	if (verbose)
+		fprintf(stderr, "sending %d initial loader triplets\n", sz / 3);
 	if(rabbit_triplets(tty, pb, sz / 3)) {
 		free(pb);
 		return(-1);
@@ -409,6 +416,8 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 
 	fprintf(stderr, "Secondary loader format detected as %s\n", *dc8pilot ? "Dynamic C 8" : "Dynamic C 9");
 
+	fprintf(stderr, "Sending secondary loader.\n");
+
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
 	pilot.sz = sz - pilotoffset;
@@ -434,7 +443,8 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 	}
 
 	// send pilot
-	fprintf(stderr, "sending %d pilot\n", pilot.sz);
+	if(verbose)
+		fprintf(stderr, "sending %d pilot\n", pilot.sz);
 	if(dwrite(tty, pb + pilotoffset, pilot.sz) < pilot.sz) {
 		perror("write(pilot) < pilot.sz");
 		free(pb);
@@ -478,6 +488,9 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	uint32_t flash;
 	int sz, i, l;
 	int rs, ws;
+
+	if(verbose)
+		fprintf(stderr, "Negotiating baudrate.\n");
 
 	// Request baudrate up (host side).
 	baudrate = dc8pilot ? 115200 : 460800;

@@ -33,6 +33,8 @@
 // #define DEBUG_COMM
 // #define DEBUG_IO
 
+extern int verbose;
+
 unsigned long dwrite_count = 0;
 unsigned long dread_count = 0;
 unsigned long long drw_time = 0;
@@ -139,7 +141,8 @@ unsigned char *load(unsigned char *pb, const char *file, int *sz) {
 	// store amount
 	*sz = r;
 
-	fprintf(stderr, "loaded %d bytes from %s\n", r, file);
+	if(verbose)
+		fprintf(stderr, "loaded %d bytes from %s\n", r, file);
 
 load_ret:
 	close(fd);
@@ -180,13 +183,15 @@ int tty_setbaud(int tty, unsigned long baud) {
 	newtio.c_cc[VMIN] = 1;
 	newtio.c_cc[VTIME] = 0;
 
-	fprintf(stderr, "flushing data for baudrate set\n");
+	if(verbose > 2)
+		fprintf(stderr, "flushing data for baudrate set\n");
 
 	// change settings
 	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0)
 		return(-1);
 
-	fprintf(stderr, "set baudrate to %lu\n", baud);
+	if(verbose > 1)
+		fprintf(stderr, "set baudrate to %lu\n", baud);
 
 	// give other end time
 	usleep(100000);
