@@ -1,38 +1,46 @@
-__sfr __at(0x50)	PCDR;
-__sfr __at(0x55)	PCFR;  // Port C function register
-__sfr __at(0x70)	PEDR;
-__sfr __at(0x74)	PECR;
-__sfr __at(0x77)	PEDDR;
-__sfr __at(0xa0)	TACSR; // Timer A Control/Status Register
-__sfr __at(0xa9)	TAT4R; // Timer A Time Constant 4 Register
-__sfr __at(0xc0)	SADR;  // Serial Port A Data Register
-__sfr __at(0xc3)	SASR;  // Serial Port A Status Register
-__sfr __at(0xc4)	SACR;  // Serial Port A Control Register
-
+#include <stdint.h>
 #include <stdio.h>
+
+#include "r2k_reg.h"
+
+extern uint8_t divider19200;
 
 int putchar(int c)
 {
-	while(SASR & 0x40);	// Wait for empty transmitter data register
+	// Convert newline to CRLF
+	if (c == '\n') {
+		putchar('\r');
+	}
+
+	while (SASR & 0x04);	// Wait for empty transmitter data register
 	SADR = c;
-	return(c);
+	return c;
 }
 
 void main(void)
 {
+#if 0	// RCM2200
 	PCDR = 0x01;
 	PECR = 0x82;
 	PEDDR = 0x82;
 	PEDR = 0x80;
-	
+#else	// RCM3209
+	PGCR = 0x00;
+	PGFR = 0x00;
+	PGDCR = 0xC0;
+	PGDR = 0x80;	// bit 6 and 7 set to 0 for LED ON
+	PGDDR = 0xC4;
+#endif
+
 	PCFR = 0x40;	// Use pin PC6 as TXA
 
-	TAT4R = 143;	// Aim for 4800 baud (assuming 22.1 MHz system clock)
+	TAT4R = divider19200;	// use divider for 19200
 	TACSR = 0x01;	// Enable timer A
 
 	SACR = 0x00;	// No interrupts, 8-bit async mode
 
-	for(;;)
+	for (;;) {
 		printf("Hello, world!\n");
+	}
 }
 

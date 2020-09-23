@@ -31,22 +31,26 @@
         .module crt0
        	.globl	_main
 
-GCSR    	.equ	0x00 ; Global control / status register
-WDTTR   	.equ	0x09 ; Watchdog timer test register
+GCSR		.equ	0x00 ; Global control / status register
+WDTTR		.equ	0x09 ; Watchdog timer test register
+MMIDR		.equ	0x10
 STACKSEG	.equ	0x11
-DATASEG 	.equ	0x12
-SEGSIZE 	.equ	0x13
-MB2CR   	.equ	0x16 ; Memory Bank 2 Control Register
+DATASEG		.equ	0x12
+SEGSIZE		.equ	0x13
+MB0CR		.equ	0x14 ; Memory Bank 0 Control Register
+MB1CR		.equ	0x15 ; Memory Bank 1 Control Register
+MB2CR		.equ	0x16 ; Memory Bank 2 Control Register
+MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 
 	.area	_HEADER (ABS)
-	
+
 	; Reset vector - assuming smode0 and smode1 input pins are grounded
 	.org 	0
-	
+
 	; setup internal interrupts
 	ld	a, #1
 	ld	iir, a
-	
+
 	; disable watchdog
 	ld	a, #0x51;
 	ioi
@@ -54,29 +58,38 @@ MB2CR   	.equ	0x16 ; Memory Bank 2 Control Register
 	ld	a, #0x54;
 	ioi
 	ld	(WDTTR), a
-	
-	ld	a, #0xc5
+
+	; normal oscillator, processor and peripheral from main clock
+	; no periodic interrupt
+	ld	a, #0x08
 	ioi
-	ld	(MB2CR), a	; 256K RAM with 0 wait states at 0x80000 accessed via /OE1 /WE1 /CS1
-	
-	ld	a, #0xd6	; stack at 0xD000, data at 0x6000
+	ld	(GCSR), a
+
+
+	; Initialize target hardware (MBxCR, GCDR).  We haven't mapped RAM
+	; or the stack yet, so we cannot `call` we need to jump and have
+	; that code jump back.
+	jp	target_init
+init_complete::
+
+	ld	a, #0xD6	; stack at 0xD000, data at 0x6000
 	ioi
 	ld	(SEGSIZE), a
-	
-	ld	a, #0x7b
+
+	ld	a, #0x7B
 	ioi
-	ld	(DATASEG), a
-	
+	ld	(DATASEG), a	; data segment at 7B:6000 = 0x81000
+
 	ld	a, #0x73
 	ioi
-	ld	(STACKSEG), a
-	
+	ld	(STACKSEG), a	; stack base at 73:D000 = 0x80000
+
 	; Set stack pointer directly above top of RAM.
 	ld	sp, #0xe000
 
-        ; Initialise global variables
-        call    gsinit
-        
+	; Initialise global variables
+	call	gsinit
+
 	call	_main
 	jp	_exit
 
@@ -87,51 +100,51 @@ MB2CR   	.equ	0x16 ; Memory Bank 2 Control Register
 	ld	a, (GCSR) ; clear interrupt
 	pop	af
 	reti
-	
+
 	; rst 0x10
-	.org	0x120	
+	.org	0x120
 	ret
 
 	; rst 0x18
 	.org	0x130
 	ret
-	
+
 	; rst 0x20
 	.org	0x140
 	ret
-	
+
 	; rst 0x28
 	.org	0x150
 	ret
-	
+
 	; rst 0x38
 	.org	0x170
 	ret
-	
+
 	; slave port
 	.org	0x180
 	reti
-	
+
 	; timer a
 	.org	0x1a0
 	reti
-	
+
 	; timer b
 	.org	0x1b0
 	reti
-	
+
 	; serial port a
 	.org	0x1c0
 	reti
-	
+
 	; serial port b
 	.org	0x1d0
 	reti
-	
+
 	; serial port c
 	.org	0x1e0
 	reti
-	
+
 	; serial port d
 	.org	0x1f0
 	reti

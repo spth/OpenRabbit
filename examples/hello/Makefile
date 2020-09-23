@@ -3,13 +3,13 @@
 all: hello.bin
 
 clean:
-	rm -f *.rel *.ihx *.bin
+	rm -f *.asm *.bin *.ihx *.lk *.lst *.map *.noi *.rel *.sym
 
 hello.bin: hello.ihx
 	objcopy --input-target=ihex --output-target=binary hello.ihx hello.bin
 
-hello.ihx: crt0.rel hello.rel
-	sdcc -mr2k --no-std-crt0 crt0.rel hello.rel -o hello.ihx
+hello.ihx: crt0.rel hello.rel target.rel
+	sdcc -mr2k --no-std-crt0 $^ -o $@
 
 hello.rel: hello.c
 	sdcc -mr2k -c hello.c -o hello.rel
@@ -17,3 +17,5 @@ hello.rel: hello.c
 crt0.rel: crt0.s
 	sdasrab -plosgff crt0.s
 
+target/%: target/%.c
+	sdcc -mr2k -c $< -o target.rel
