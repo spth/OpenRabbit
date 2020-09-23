@@ -37,6 +37,7 @@ void rabbit_getvar(void *var, const void **src, size_t sz);
 
 void rabbit_parse_info(_TCSystemInfoProbe *info, const void *src);
 void rabbit_parse_registers(struct __dkregisters *regs, const void *src);
+const char *rabbit_cpuname(uint16_t cpuid);
 
 void rabbit_show_registers(const struct __dkregisters *regs);
 

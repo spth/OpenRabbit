@@ -131,3 +131,22 @@ void rabbit_show_registers(const struct __dkregisters *regs) {
 	fprintf(stderr, "  pc  %6d 0x%04x\n", regs->_pc, regs->_pc);
 }
 
+const char *rabbit_cpuname(uint16_t cpuid){
+	switch(cpuid) {
+	case 0x0000:
+		return("Rabbit 2000");
+	case 0x0001:
+		return("Rabbit 2000A");
+	case 0x0002:
+		return("Rabbit 2000B");
+	case 0x0003:
+		return("Rabbit 2000C");
+	case 0x0100:
+		return("Rabbit 3000");
+	case 0x0101:
+		return("Rabbit 3000A");
+	default:
+		return("Unknown processor");
+	}
+}
+

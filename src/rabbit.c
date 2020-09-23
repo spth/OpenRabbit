@@ -274,7 +274,11 @@ int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 		perror("triplet write < 3");
 		return(-1);
 	}
-	tcdrain(tty); // Ensure the triplet has actually been sent. We used to do this with an usleep(15000) instead, but using tcdrain() is faster. However, apparently tcdrain() doesn't work reliably with PL2303.
+	// Ensure the triplet has actually been sent. We used to do this with an usleep(15000) instead, but using tcdrain() is faster. However, apparently tcdrain() doesn't work reliably with the PL2303 variants. Tested with Pl2303RA, PL2303GT and PL2303TA.
+	if(tcdrain(tty)) {
+		perror("failed to drain serial buffers");
+		return(-1);
+	}
 	return(0);
 }
 
@@ -509,7 +513,7 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	rabbit_parse_info(&info, dc8pilot ? b : b + 4); // DC9 prepends a 4 byte system id block.
 
 	// show some info
-	fprintf(stderr, "CPU:  0x%04x\n", info.IDBlock.cpuID);
+	fprintf(stderr, "CPU:  0x%04x (%s)\n", info.IDBlock.cpuID, rabbit_cpuname(info.IDBlock.cpuID));
 	fprintf(stderr, "Freq: %d\n", info.IDBlock.crystalFreq);
 	fprintf(stderr, "sectorSize: 0x%04x\n", info.IDBlock.sectorSize);
 	fprintf(stderr, "numSectors: 0x%04x\n", info.IDBlock.numSectors);
