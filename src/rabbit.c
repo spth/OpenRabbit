@@ -381,7 +381,7 @@ int rabbit_coldload(int tty, const char *file) {
 	return(0);
 }
 
-int rabbit_pilot(int tty, const char *pfile, bool dc8pilot) {
+int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 	unsigned char *pb = NULL;
 	uint16_t csumR, csumU;
 	uint8_t csum;
@@ -392,8 +392,6 @@ int rabbit_pilot(int tty, const char *pfile, bool dc8pilot) {
 	} pilot;
 	int sz, i;
 
-	int pilotoffset = dc8pilot ? 0x6000 : 0;
-
 	// move baudrate up
 	if(tty_setbaud(tty, 57600))
 		return(-1);
@@ -401,6 +399,15 @@ int rabbit_pilot(int tty, const char *pfile, bool dc8pilot) {
 	// load pilot.bin
 	if((pb = load(pb, pfile, &sz)) == NULL)
 		return(-1);
+
+	*dc8pilot = sz > 0x6000;
+	for(int i = 0; i < 0x6000; i++)
+		if (pb[i])
+			*dc8pilot = false;
+
+	int pilotoffset = *dc8pilot ? 0x6000 : 0;
+
+	fprintf(stderr, "Secondary loader format detected as %s\n", *dc8pilot ? "Dynamic C 8" : "Dynamic C 9");
 
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
@@ -620,7 +627,7 @@ char rabbit_debug(int tty) {
 	return(1);
 }
 #include <time.h>
-int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool dc8pilot) {
+int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool *dc8pilot) {
 	// reset her
 	if(rabbit_reset(tty))
 		return(-1);
@@ -634,7 +641,7 @@ int rabbit_program(int tty, const char *coldload, const char *pilot, const char 
 		return(-1);
 
 	// load project
-	if(rabbit_upload(tty, project, dc8pilot))
+	if(rabbit_upload(tty, project, *dc8pilot))
 		return(-1);
 
 	return(0);
