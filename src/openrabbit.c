@@ -439,8 +439,8 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stderr, "Usage: openrabbitfu [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
-	fprintf(stderr, "Usage: openrabbit <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stderr, "Usage: openrabbitfu [--help] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+	fprintf(stderr, "Usage: openrabbit [--help] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 }
 
 int main(int argc, char **argv) {
@@ -466,22 +466,26 @@ int main(int argc, char **argv) {
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
-	if(argc > 1 && !strcmp(argv[1], "--help")) {
-		usage(stdout);
-		return(0);
-	}
-
-	if(argc > 1 && !strcmp(argv[1], "--run")) {
-		if(!rfu) {
-			usage(stderr);
-			return(-1);
+	// Handle options
+	while(argc > 1) {
+		if (!strcmp(argv[1], "--help")) {
+			usage(stdout);
+			return(0);
 		}
-		run = true;
-		memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
-		argc--;
+		else if (!strcmp(argv[1], "--run")) {
+			if(!rfu) {
+				usage(stderr);
+				return(-1);
+			}
+			run = true;
+			memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+			argc--;
+		}
+		else
+			break;
 	}
 
-	// check argument count
+	// check non-option argument count
 	if(argc != (rfu ? 5 : 8)) {
 		usage(stderr);
 		return(1);
