@@ -31,8 +31,8 @@ _REG(0x16, MB2CR); // Memory Bank 2 Control Register
 _REG(0x17, MB3CR); // Memory Bank 3 Control Register
 
 _REG(0x20, SPD0R); // Slave Port Data 0 Register
-_REG(0x21, SPD0R); // Slave Port Data 1 Register
-_REG(0x22, SPD0R); // Slave Port Data 2 Register
+_REG(0x21, SPD1R); // Slave Port Data 1 Register
+_REG(0x22, SPD2R); // Slave Port Data 2 Register
 _REG(0x23, SPSR);  // Slave Port Status Register
 _REG(0x24, SPCR);  // Slave Port Control Register
 
@@ -64,14 +64,14 @@ _REG(0x6F, PDB7R); // Port D Bit 7 Register
 _REG(0x70, PEDR);  // Port E data register
 _REG(0x74, PECR);  // Port E control register
 _REG(0x77, PEDDR); // Port E data direction register
-_REG(0x78, PDB0R); // Port E Bit 0 Register
-_REG(0x79, PDB1R); // Port E Bit 1 Register
-_REG(0x7A, PDB2R); // Port E Bit 2 Register
-_REG(0x7B, PDB3R); // Port E Bit 3 Register
-_REG(0x7C, PDB4R); // Port E Bit 4 Register
-_REG(0x7D, PDB5R); // Port E Bit 5 Register
-_REG(0x7E, PDB6R); // Port E Bit 6 Register
-_REG(0x7F, PDB7R); // Port E Bit 7 Register
+_REG(0x78, PEB0R); // Port E Bit 0 Register
+_REG(0x79, PEB1R); // Port E Bit 1 Register
+_REG(0x7A, PEB2R); // Port E Bit 2 Register
+_REG(0x7B, PEB3R); // Port E Bit 3 Register
+_REG(0x7C, PEB4R); // Port E Bit 4 Register
+_REG(0x7D, PEB5R); // Port E Bit 5 Register
+_REG(0x7E, PEB6R); // Port E Bit 6 Register
+_REG(0x7F, PEB7R); // Port E Bit 7 Register
 
 _REG(0x80, IB0CR); // I/O Bank 0 Control Register
 _REG(0x81, IB1CR); // I/O Bank 1 Control Register
