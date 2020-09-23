@@ -165,11 +165,6 @@ init_complete::
 	.area   _HEAP
 
 	.area   _CODE
-__clock::
-	ld	a,#2
-        rst     #0x28
-	ret
-
 _exit::
 	;; Exit - special code to the emulator
 	ld	a,#0
