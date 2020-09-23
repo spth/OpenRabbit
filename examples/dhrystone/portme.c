@@ -3,6 +3,8 @@
 
 #include "r2k.h"
 
+unsigned long clock(void);
+
 void init(void)
 {
 	PCFR = 0x40;	// Use pin PC6 as TXA
@@ -11,10 +13,16 @@ void init(void)
 	SACR = 0x00;	// No interrupts, 8-bit async mode
 }
 
-unsigned int clock(void)
+unsigned long clock(void)
 {
-	RTC0R = 0;
-	return(((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24));
+	unsigned long clock0, clock1;
+	do
+	{
+		RTC0R = 0;
+		clock0 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
+		clock1 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
+	} while (clock0 != clock1);
+	return(clock1);
 }
 
 int putchar(int c)
