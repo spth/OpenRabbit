@@ -1,0 +1,19 @@
+# ignore build artifacts
+
+# automake
+autom4te.cache/
+stamp-h1
+
+# sdcc
+*.asm
+*.ihx
+*.lk
+*.lst
+*.map
+*.noi
+*.rel
+*.sym
+
+# gcc
+*.o
+.deps/
