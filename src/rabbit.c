@@ -269,7 +269,7 @@ int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *d
 	return(ret);
 }
 
-int rabbit_triplet(int tty, const unsigned char triplet[3]) {
+static int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 	if(dwrite(tty, triplet, 3) < 3) {
 		perror("triplet write < 3");
 		return(-1);
@@ -645,5 +645,16 @@ int rabbit_program(int tty, const char *coldload, const char *pilot, const char 
 		return(-1);
 
 	return(0);
+}
+
+int rabbit_start(int tty)
+{
+	const unsigned char start[3] = { 0x80, 0x24, 0x80};
+
+	if(rabbit_reset(tty))
+		return(-1);
+
+	if(rabbit_triplets(tty, start, 3))
+		return(-1);
 }
 

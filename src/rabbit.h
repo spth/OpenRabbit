@@ -41,5 +41,8 @@ char rabbit_debug(int tty);
 // Load program into Rabbit. Use tty for serial device, coldload for initial loder filename, pilot for secondary loader filename, project for user program filename, dc8pilot indicates that the secondary loader is Dynamic C 8-style instead of Dynamic C 9.
 int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool *dc8pilot);
 
+// Start program in flash.
+int rabbit_start(int tty);
+
 #endif
 

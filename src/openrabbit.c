@@ -495,13 +495,16 @@ int main(int argc, char **argv) {
 
 	// Start program if requested
 	if(run) {
-		fprintf(stderr, "--run not implemented.\n");
-		return(-1);
+		int ret = rabbit_start(tty);
+		close(tty);
+		return(ret);
 	}
 
 	// stop here if we're rfu
-	if(rfu)
+	if(rfu) {
+		close(tty);
 		return(0);
+	}
 
 	// start debug
 	if(!rabbit_debug(tty)) {
