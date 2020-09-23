@@ -1,8 +1,24 @@
 # ignore build artifacts
 
 # automake
+m4/*
+aclocal.m4
 autom4te.cache/
+compile
+config.*
+configure
+depcomp
+missing
+ltmain.sh
+libtool
 stamp-h1
+install-sh
+Makefile
+src/Makefile
+coldboot/Makefile
+Makefile.in
+src/Makefile.in
+coldboot/Makefile.in
 
 # sdcc
 *.asm
@@ -17,3 +33,10 @@ stamp-h1
 # gcc
 *.o
 .deps/
+
+# binaries
+coldboot/coldload.bin
+coldboot/coldload.no3.bin
+coldboot/makecold
+examples/*/*.bin
+src/openrabbit
