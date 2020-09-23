@@ -1,3 +1,6 @@
+#ifndef __R2K_H__
+#define __R2K_H__ 1
+
 #define _REG(addr, reg)	__sfr __at(addr) reg
 
 _REG(0x00, GCSR);  // global control / status register
@@ -30,12 +33,12 @@ _REG(0x4D, PGFR);
 _REG(0x4E, PGDCR);
 _REG(0x4F, PGDDR);
 
-_REG(0x50, PCDR);
+_REG(0x50, PCDR);  // Port E data register
 _REG(0x55, PCFR);  // Port C function register
 
-_REG(0x70, PEDR);
-_REG(0x74, PECR);
-_REG(0x77, PEDDR);
+_REG(0x70, PEDR);  // Port E data register
+_REG(0x74, PECR);  // Port E control register
+_REG(0x77, PEDDR); // Port E data direction register
 
 _REG(0xA0, TACSR); // Timer A Control/Status Register
 _REG(0xA9, TAT4R); // Timer A Time Constant 4 Register
@@ -45,3 +48,6 @@ _REG(0xC3, SASR);  // Serial Port A Status Register
 _REG(0xC4, SACR);  // Serial Port A Control Register
 
 #undef _REG
+
+#endif
+

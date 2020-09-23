@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "../r2k_reg.h"
+#include "../r2k.h"
 
 #define GCDR_VALUE	0x07	// clock doubler for 11.0592 base
 #define MB0CR_VALUE	0xC0
