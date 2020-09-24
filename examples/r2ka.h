@@ -40,5 +40,7 @@ _REG(0xD2, SBLR);  // Serial Port B Long Stop Register
 _REG(0xE2, SCLR);  // Serial Port C Long Stop Register
 _REG(0xF2, SDLR);  // Serial Port D Long Stop Register
 
+#undef _REG
+
 #endif
 

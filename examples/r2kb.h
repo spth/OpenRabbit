@@ -37,5 +37,7 @@
 _REG(0x0A, GCM0R);  // Global Clock Modulator 0 Register
 _REG(0x0B, GCM1R);  // Global Clock Modulator 1 Register
 
+#undef _REG
+
 #endif
 

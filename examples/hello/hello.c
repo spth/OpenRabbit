@@ -3,6 +3,8 @@
 
 #include "r2k.h"
 
+#include "targetconfig.h"
+
 extern uint8_t divider19200;
 
 int putchar(int c)
@@ -34,7 +36,7 @@ void main(void)
 
 	PCFR = 0x40;	// Use pin PC6 as TXA
 
-	TAT4R = divider19200 - 1;	// use divider for 19200 - value in register is one less than the divider used (e.g. a value of 0 will result in clock division by 1).
+	TAT4R = SERIAL_DIVIDER_38400 - 1;	// Value in register is one less than the divider used (e.g. a value of 0 will result in clock division by 1).
 	TACSR = 0x01;	// Enable timer A
 
 	SACR = 0x00;	// No interrupts, 8-bit async mode

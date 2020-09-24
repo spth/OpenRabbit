@@ -33,6 +33,7 @@
 
 GCSR		.equ	0x00 ; Global control / status register
 WDTTR		.equ	0x09 ; Watchdog timer test register
+GCDR		.equ	0x0f ; Global Clock Doubler Register
 MMIDR		.equ	0x10
 STACKSEG	.equ	0x11
 DATASEG		.equ	0x12
@@ -66,12 +67,10 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 	ld	(GCSR), a
 
 
-	; Initialize target hardware (MBxCR, GCDR).  We haven't mapped RAM
-	; or the stack yet, so we cannot `call` we need to jump and have
-	; that code jump back.
-	jp	target_init
-init_complete::
+	; Initialize target hardware (MBxCR, GCDR).
+	.include "targetstartup.s"
 
+	; Now that RAM is mapped, we can use the stack.
 	ld	a, #0xD6	; stack at 0xD000, data at 0x6000
 	ioi
 	ld	(SEGSIZE), a

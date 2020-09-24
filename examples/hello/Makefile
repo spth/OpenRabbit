@@ -1,25 +1,27 @@
-SDCC=sdcc
-SDCCFLAGS=-mr2k -I..
+SDCC = sdcc
+SDCCFLAGS = -mr2k -I..
 
-.PHONY: clean
+TARGETS = rcm2200 rcm3209
 
-all: hello.bin
+HELLO = $(foreach target, $(TARGETS), hello-$(target).bin)
+
+.PHONY: all clean
+
+all: $(HELLO)
 
 clean:
 	rm -f *.asm *.bin *.ihx *.lk *.lst *.map *.noi *.rel *.sym
 
-hello.bin: hello.ihx
-	objcopy --input-target=ihex --output-target=binary hello.ihx hello.bin
+hello-%.bin: hello-%.ihx
+	objcopy --input-target=ihex --output-target=binary $< $@
 
-hello.ihx: crt0.rel hello.rel target.rel
+hello-%.ihx: crt0-%.rel hello-%.rel
 	$(SDCC) $(SDCCFLAGS) --no-std-crt0 $^ -o $@
 
-hello.rel: hello.c
-	$(SDCC) $(SDCCFLAGS) -c hello.c -o hello.rel
+hello-%.rel: hello.c
+	$(SDCC) $(SDCCFLAGS) -Itargetconfigurations/$* -c $< -o $@
 
-crt0.rel: crt0.s
-	sdasrab -plosgff crt0.s
-
-target/%: target/%.c
-	$(SDCC) $(SDCCFLAGS) -c $< -o target.rel
+crt0-%.rel: crt0.s targetconfigurations/%/targetstartup.s
+	sdasrab -plosgff -Itargetconfigurations/$* crt0.s
+	mv crt0.rel $@
 

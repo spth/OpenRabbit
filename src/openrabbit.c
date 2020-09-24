@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
+ *   Copyright (C) 2020 by Philipp Klaus Krause                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

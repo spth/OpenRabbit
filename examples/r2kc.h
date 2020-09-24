@@ -36,5 +36,7 @@
 
 _REG(0x19, MTCR);  // Memory Timing Control Register
 
+#undef _REG
+
 #endif
 
