@@ -21,7 +21,7 @@ hello-%.ihx: crt0-%.rel hello-%.rel
 hello-%.rel: hello.c ../targetconfigurations/%/targetconfig.h
 	$(SDCC) $(SDCCFLAGS) -I../targetconfigurations/$* -c $< -o $@
 
-crt0-%.rel: crt0.s ../targetconfigurations/%/targetstartup.s
-	sdasrab -plosgff -I../targetconfigurations/$* crt0.s
-	mv crt0.rel $@
+crt0-%.rel: ../crt0-noint.s ../targetconfigurations/%/targetstartup.s
+	sdasrab -plosgff -I../targetconfigurations/$* $<
+	mv ../crt0-noint.rel $@
 

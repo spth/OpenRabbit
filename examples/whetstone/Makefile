@@ -12,9 +12,9 @@ image.ihx: crt0-rcm2200.rel whetstone.rel portme.rel
 %.rel: %.c
 	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) $<
 
-crt0-%.rel: crt0.s ../targetconfigurations/%/targetstartup.s
-	sdasrab -plosgff -I../targetconfigurations/$* crt0.s
-	mv crt0.rel $@
+crt0-%.rel: ../crt0-noint.s ../targetconfigurations/%/targetstartup.s
+	sdasrab -plosgff -I../targetconfigurations/$* $<
+	mv ../crt0-noint.rel $@
 
 clean:
 	rm -rf *.rel *.map *.lst *.noi *.lk *.lnk *.sym *.asm *.ihx *.o *.rst *.bin
