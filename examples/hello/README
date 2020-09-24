@@ -1,6 +1,4 @@
 Work in progress for bringing Rabbit hardware up using SDCC/OpenRabbit.
 
-Create target.rel by running `make target/rcm3209` or `make target/rcm2200`.
-
-Then run `make` alone to create `hello.bin` to download to the target.
+Run `make` to create `hello-*.bin` for all targets.
 

@@ -18,10 +18,10 @@ hello-%.bin: hello-%.ihx
 hello-%.ihx: crt0-%.rel hello-%.rel
 	$(SDCC) $(SDCCFLAGS) --no-std-crt0 $^ -o $@
 
-hello-%.rel: hello.c
-	$(SDCC) $(SDCCFLAGS) -Itargetconfigurations/$* -c $< -o $@
+hello-%.rel: hello.c ../targetconfigurations/%/targetconfig.h
+	$(SDCC) $(SDCCFLAGS) -I../targetconfigurations/$* -c $< -o $@
 
-crt0-%.rel: crt0.s targetconfigurations/%/targetstartup.s
-	sdasrab -plosgff -Itargetconfigurations/$* crt0.s
+crt0-%.rel: crt0.s ../targetconfigurations/%/targetstartup.s
+	sdasrab -plosgff -I../targetconfigurations/$* crt0.s
 	mv crt0.rel $@
 
