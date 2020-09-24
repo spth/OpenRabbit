@@ -4,24 +4,7 @@ A free portable replacement for the Digi Rabbit Field Utility and an on-target d
 
 A free inital loader (coldload.bin) and secondary loader (pilot.bin) are included in OpenRabbit, but it will also work with loader binary blobs from Dynamic C 8 or 9.
 
-The build system makes use of automake, autoconf and libtool.  Make sure
-they're installed on your system:
-
-    sudo apt-get install automake autoconf libtool
-
-Generate the build files:
-
-    autoreconf -i
-
-Build (including initial loader - requires SDCC):
-
-    ./configure
-    make
-
-Build (without initial loader):
-
-    ./configure --disable-coldboot
-    make
+See BUILD for how to build it.
 
 Use:
 
