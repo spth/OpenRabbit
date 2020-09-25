@@ -36,6 +36,15 @@
 
 #include "r2kc.h"
 
+_RABREG(0x0D, GPSCR); // Global Power Save Control Register
+
+_RABREG(0x18, MECR);  // MMu Expanded Code Register
+
+_RABREG(0x1C, BDCR);  // Breakpoint/Debug Control Register
+
+_RABREG(0x2C, GROM);  // Global RAM Configuration Register
+_RABREG(0x2D, GRAM);  // Global ROM Configuration Register
+
 _RABREG(0x38, PGDR);  // Port F Data Register
 _RABREG(0x3C, PGCR);  // Port F Control Register
 _RABREG(0x3D, PGFR);  // Port F Function Register
@@ -50,10 +59,20 @@ _RABREG(0x4D, PGFR);  // Port G Function Register
 _RABREG(0x4E, PGDCR); // Port G Drive Control Register
 _RABREG(0x4F, PGDDR); // Port G Data Direction Register
 
+// TODO: Input capture registers, section 20.1.2 of the Rabbit 3000 User manual.
+
+// TODO: PWM registers, section 22.1.2 of the Rabbit 3000 User manual.
+
 _RABREG(0x90, QDCSR); // Quad Decode Ctrl/Status Register
 _RABREG(0x91, QDCR);  // Quad Decode Control Register
 _RABREG(0x94, QDC1R); // Quad Decode Count 1 Register
 _RABREG(0x96, QDC2R); // Quad Decode Count 2 Register
+
+_RABREG(0xA5, TAT2R); // Timer A Time Constant 2 Register
+_RABREG(0xA6, TAT8R); // Timer A Time Constant 8 Register
+_RABREG(0xA7, TAT3R); // Timer A Time Constant 3 Register
+_RABREG(0xA8, TAT9R); // Timer A Time Constant 9 Register
+_RABREG(0xAA, TAT10R);// Timer A Time Constant 10 Register
 
 _RABREG(0xC5, SAER);  // Serial Port A Extended Register
 

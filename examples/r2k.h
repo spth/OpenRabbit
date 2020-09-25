@@ -82,8 +82,8 @@ _RABREG(0x98, I0CR);  // Interrupt 0 Control Register
 _RABREG(0x99, I1CR);  // Interrupt 1 Control Register
 
 _RABREG(0xA0, TACSR); // Timer A Control/Status Register
-_RABREG(0xA2, TACR);  // Timer A Control Register
 _RABREG(0xA3, TAT1R); // Timer A Time Constant 1 Register
+_RABREG(0xA4, TACR);  // Timer A Control Register
 _RABREG(0xA9, TAT4R); // Timer A Time Constant 4 Register
 _RABREG(0xAB, TAT5R); // Timer A Time Constant 5 Register
 _RABREG(0xAD, TAT6R); // Timer A Time Constant 6 Register

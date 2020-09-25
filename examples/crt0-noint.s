@@ -92,12 +92,16 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 	call	_main
 	jp	_exit
 
-	; Periodic interrupt
+	; Periodic Interrupt
 	.org	0x100
 	push	af
 	ioi
 	ld	a, (GCSR) ; clear interrupt
 	pop	af
+	reti
+
+	; Secondary Watchdog - Rabbit 3000A only
+	.org	0x100
 	reti
 
 	; rst 0x10
@@ -116,35 +120,39 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 	.org	0x150
 	ret
 
+	; Syscall instruction - Rabbit 3000A only
+	.org	0x160
+	ret
+
 	; rst 0x38
 	.org	0x170
 	ret
 
-	; slave port
+	; Slave Port
 	.org	0x180
 	reti
 
-	; timer a
+	; Timer A
 	.org	0x1a0
 	reti
 
-	; timer b
+	; Timer B
 	.org	0x1b0
 	reti
 
-	; serial port a
+	; Serial Port A
 	.org	0x1c0
 	reti
 
-	; serial port b
+	; Serial Port B
 	.org	0x1d0
 	reti
 
-	; serial port c
+	; Serial Port C
 	.org	0x1e0
 	reti
 
-	; serial port d
+	; Serial Port D
 	.org	0x1f0
 	reti
 
