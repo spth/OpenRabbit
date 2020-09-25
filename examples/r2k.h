@@ -86,12 +86,41 @@ _REG(0x98, I0CR);  // Interrupt 0 Control Register
 _REG(0x99, I1CR);  // Interrupt 1 Control Register
 
 _REG(0xA0, TACSR); // Timer A Control/Status Register
+_REG(0xA2, TACR);  // Timer A Control Register
+_REG(0xA3, TAT1R); // Timer A Time Constant 1 Register
 _REG(0xA9, TAT4R); // Timer A Time Constant 4 Register
+_REG(0xAB, TAT5R); // Timer A Time Constant 5 Register
+_REG(0xAD, TAT6R); // Timer A Time Constant 6 Register
+_REG(0xAF, TAT7R); // Timer A Time Constant 7 Register
+
+_REG(0xB0, TBCSR); // Timer B Control/Status Register
+_REG(0xB1, TBCR);  // Timer B Control Register
+_REG(0xB2, TBM1R); // Timer B MSB 1 Register
+_REG(0xB3, TBL1R); // Timer B LSB 1 Register
+_REG(0xB4, TBM2R); // Timer B MSB 2 Register
+_REG(0xB5, TBL2R); // Timer B LSB 2 Register
+_REG(0xBE, TBCMR);  // Timer B Count MSB Register
+_REG(0xBF, TBCLR);  // Timer B Count LSB Register
 
 _REG(0xC0, SADR);  // Serial Port A Data Register
 _REG(0xC1, SAAR);  // Serial Port A Adress Register
 _REG(0xC3, SASR);  // Serial Port A Status Register
 _REG(0xC4, SACR);  // Serial Port A Control Register
+
+_REG(0xD0, SBDR);  // Serial Port A Data Register
+_REG(0xD1, SBAR);  // Serial Port A Adress Register
+_REG(0xD3, SBSR);  // Serial Port A Status Register
+_REG(0xD4, SBCR);  // Serial Port A Control Register
+
+_REG(0xE0, SCDR);  // Serial Port A Data Register
+_REG(0xE1, SCAR);  // Serial Port A Adress Register
+_REG(0xE3, SCSR);  // Serial Port A Status Register
+_REG(0xE4, SCCR);  // Serial Port A Control Register
+
+_REG(0xF0, SDDR);  // Serial Port A Data Register
+_REG(0xF1, SDAR);  // Serial Port A Adress Register
+_REG(0xF3, SDSR);  // Serial Port A Status Register
+_REG(0xF4, SDCR);  // Serial Port A Control Register
 
 #undef _REG
 
