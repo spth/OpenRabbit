@@ -5,8 +5,6 @@
 
 #include "targetconfig.h"
 
-extern uint8_t divider19200;
-
 int putchar(int c)
 {
 	// Convert newline to CRLF
