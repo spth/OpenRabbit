@@ -31,10 +31,17 @@
 #define __R3KA_H__ 1
 
 #ifndef _RABREG
-#define _RABREG(addr, reg)	__banked __sfr __at(addr) reg
+#define _RABREG(addr, reg)	__sfr __banked __at(addr) reg
 #endif
 
 #include "r3ka.h"
+
+_RABREG(0x000C, SWDTR);  // Secondary Watchdog Timer Register
+
+_RABREG(0x0095, QDC1HR); // Quad Decode Count 1 High Register
+_RABREG(0x0097, QDC2HR); // Quad Decode Count 2 High Register
+
+_RABREG(0x0448, RAMSR);  // RAM Segment Register
 
 #endif
 

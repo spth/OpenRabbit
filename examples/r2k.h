@@ -41,12 +41,6 @@ _RABREG(0x24, SPCR);  // Slave Port Control Register
 _RABREG(0x30, PADR);  // Port A Data Register
 _RABREG(0x40, PBDR);  // Port B Data Register
 
-_RABREG(0x48, PGDR);
-_RABREG(0x4C, PGCR);
-_RABREG(0x4D, PGFR);
-_RABREG(0x4E, PGDCR);
-_RABREG(0x4F, PGDDR);
-
 _RABREG(0x50, PCDR);  // Port C Data Register
 _RABREG(0x55, PCFR);  // Port C Function Register
 
@@ -109,20 +103,20 @@ _RABREG(0xC1, SAAR);  // Serial Port A Adress Register
 _RABREG(0xC3, SASR);  // Serial Port A Status Register
 _RABREG(0xC4, SACR);  // Serial Port A Control Register
 
-_RABREG(0xD0, SBDR);  // Serial Port A Data Register
-_RABREG(0xD1, SBAR);  // Serial Port A Adress Register
-_RABREG(0xD3, SBSR);  // Serial Port A Status Register
-_RABREG(0xD4, SBCR);  // Serial Port A Control Register
+_RABREG(0xD0, SBDR);  // Serial Port B Data Register
+_RABREG(0xD1, SBAR);  // Serial Port B Adress Register
+_RABREG(0xD3, SBSR);  // Serial Port B Status Register
+_RABREG(0xD4, SBCR);  // Serial Port B Control Register
 
-_RABREG(0xE0, SCDR);  // Serial Port A Data Register
-_RABREG(0xE1, SCAR);  // Serial Port A Adress Register
-_RABREG(0xE3, SCSR);  // Serial Port A Status Register
-_RABREG(0xE4, SCCR);  // Serial Port A Control Register
+_RABREG(0xE0, SCDR);  // Serial Port C Data Register
+_RABREG(0xE1, SCAR);  // Serial Port C Adress Register
+_RABREG(0xE3, SCSR);  // Serial Port C Status Register
+_RABREG(0xE4, SCCR);  // Serial Port C Control Register
 
-_RABREG(0xF0, SDDR);  // Serial Port A Data Register
-_RABREG(0xF1, SDAR);  // Serial Port A Adress Register
-_RABREG(0xF3, SDSR);  // Serial Port A Status Register
-_RABREG(0xF4, SDCR);  // Serial Port A Control Register
+_RABREG(0xF0, SDDR);  // Serial Port D Data Register
+_RABREG(0xF1, SDAR);  // Serial Port D Adress Register
+_RABREG(0xF3, SDSR);  // Serial Port D Status Register
+_RABREG(0xF4, SDCR);  // Serial Port D Control Register
 
 #undef _RABREG
 
