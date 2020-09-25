@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
-   r2kc.h - definitions on the built in I/O ports for the Rabbit 2000C
-            for use with SDCC
+   r3k.h - definitions on the built in I/O ports for the Rabbit 3000
+           for use with SDCC
 
    Copyright (C) 2020, Philipp Klaus Krause <pkk AT spth.de>
 
@@ -27,16 +27,14 @@
    might be covered by the GNU General Public License.
 -------------------------------------------------------------------------*/
 
-#ifndef __R2KC_H__
-#define __R2KC_H__ 1
+#ifndef __R3K_H__
+#define __R3K_H__ 1
 
 #ifndef _RABREG
 #define _RABREG(addr, reg)	__sfr __at(addr) reg
 #endif
 
-#include "r2kb.h"
-
-_RABREG(0x19, MTCR);  // Memory Timing Control Register
+#include "r2kc.h"
 
 #endif
 

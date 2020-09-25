@@ -2,7 +2,7 @@
    r2kb.h - definitions on the built in I/O ports for the Rabbit 2000B
             for use with SDCC
 
-   Copyright (C) 2020, Peter Klaus Krause <pkk AT spth.de>
+   Copyright (C) 2020, Philipp Klaus Krause <pkk AT spth.de>
 
    This library is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -30,14 +30,14 @@
 #ifndef __R2KB_H__
 #define __R2KB_H__ 1
 
+#ifndef _RABREG
+#define _RABREG(addr, reg)	__sfr __at(addr) reg
+#endif
+
 #include "r2ka.h"
 
-#define _REG(addr, reg)	__sfr __at(addr) reg
-
-_REG(0x0A, GCM0R);  // Global Clock Modulator 0 Register
-_REG(0x0B, GCM1R);  // Global Clock Modulator 1 Register
-
-#undef _REG
+_RABREG(0x0A, GCM0R);  // Global Clock Modulator 0 Register
+_RABREG(0x0B, GCM1R);  // Global Clock Modulator 1 Register
 
 #endif
 

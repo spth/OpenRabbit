@@ -2,7 +2,7 @@
    r2ka.h - definitions on the built in I/O ports for the Rabbit 2000A
             for use with SDCC
 
-   Copyright (C) 2020, Peter Klaus Krause <pkk AT spth.de>
+   Copyright (C) 2020, Philipp Klaus Krause <pkk AT spth.de>
 
    This library is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -30,17 +30,17 @@
 #ifndef __R2KA_H__
 #define __R2KA_H__ 1
 
+#ifndef _RABREG
+#define _RABREG(addr, reg)	__sfr __at(addr) reg
+#endif
+
 #include "r2k.h"
 
-#define _REG(addr, reg)	__sfr __at(addr) reg
-
-_REG(0x2F, GREV);  // Global Revision Register
-_REG(0xC2, SALR);  // Serial Port A Long Stop Register
-_REG(0xD2, SBLR);  // Serial Port B Long Stop Register
-_REG(0xE2, SCLR);  // Serial Port C Long Stop Register
-_REG(0xF2, SDLR);  // Serial Port D Long Stop Register
-
-#undef _REG
+_RABREG(0x2F, GREV);  // Global Revision Register
+_RABREG(0xC2, SALR);  // Serial Port A Long Stop Register
+_RABREG(0xD2, SBLR);  // Serial Port B Long Stop Register
+_RABREG(0xE2, SCLR);  // Serial Port C Long Stop Register
+_RABREG(0xF2, SDLR);  // Serial Port D Long Stop Register
 
 #endif
 
