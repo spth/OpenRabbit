@@ -2,7 +2,7 @@
 #define __R2K_H__ 1
 
 #ifndef _RABREG
-#define _RABREG(addr, reg)	__sfr __at(addr) reg
+#define _RABREG(addr, reg) __sfr __at(addr) reg
 #endif
 
 _RABREG(0x00, GCSR);  // global control / status register
@@ -22,7 +22,7 @@ _RABREG(0x0D, GPSCR); // global power save control register
 _RABREG(0x0E, GOCR);  // global output control register
 _RABREG(0x0F, GCDR);  // global clock double register
 
-_RABREG(0x10, MMIDR); // MMI Instruction / Data Register
+_RABREG(0x10, MMIDR); // MMI Instruction/Data Register
 _RABREG(0x11, STACKSEG);
 _RABREG(0x12, DATASEG);
 _RABREG(0x13, SEGSIZE);

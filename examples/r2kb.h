@@ -31,7 +31,7 @@
 #define __R2KB_H__ 1
 
 #ifndef _RABREG
-#define _RABREG(addr, reg)	__sfr __at(addr) reg
+#define _RABREG(addr, reg) __sfr __at(addr) reg
 #endif
 
 #include "r2ka.h"
