@@ -664,10 +664,14 @@ int rabbit_start(int tty)
 {
 	const unsigned char start[3] = { 0x80, 0x24, 0x80};
 
+	// Set baudrate back to 2400
+	if(tty_setbaud(tty, 2400))
+		return(-1);
+
 	if(rabbit_reset(tty))
 		return(-1);
 
-	if(rabbit_triplets(tty, start, 3))
+	if(rabbit_triplets(tty, start, 1))
 		return(-1);
 }
 

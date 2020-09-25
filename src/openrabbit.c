@@ -525,6 +525,7 @@ int main(int argc, char **argv) {
 
 	// Start program if requested
 	if(run) {
+		puts("Rebooting and running installed code.");
 		int ret = rabbit_start(tty);
 		close(tty);
 		return(ret);
