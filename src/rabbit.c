@@ -671,7 +671,7 @@ int rabbit_start(int tty)
 	if(rabbit_reset(tty))
 		return(-1);
 
-	if(rabbit_triplets(tty, start, 1))
+	if(rabbit_triplets(tty, start, sizeof(start) / 3))
 		return(-1);
 }
 

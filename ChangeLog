@@ -1,4 +1,4 @@
-????-??-??	v0.2.2
+2020-09-25	v0.2.2
 Improve support for Dynamic C 9 pilot.bin, replace command-line option for Dynamic C 8 pilot.bin format by autodetection. Add --verbose option to control verbosity.
 
 2020-09-20	v0.2.1

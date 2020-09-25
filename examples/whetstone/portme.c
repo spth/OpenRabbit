@@ -22,7 +22,7 @@ unsigned long clock(void)
 		clock0 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
 		clock1 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
 	} while (clock0 != clock1);
-	return(clock1 / 32.768);
+	return(clock1 / 32.768); // Whetstone assumes CLOCKS_PER_SEC to be 1000.
 }
 
 int putchar(int c)
