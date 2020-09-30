@@ -52,7 +52,7 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 	ld	iir, a
 
 	; Configure physical address space.
-	; Leave Flash at default slow at /OE0, /CS0
+	; Leave MB0CR Flash at default slow at /OE0, /CS0
 	; Assume slow RAM at /CS1, /OE1, /WE1
 	ld	a, #0x05
 	ioi

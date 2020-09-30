@@ -1,5 +1,5 @@
 SDCC=sdcc
-SDCCFLAGS=-mr2k --opt-code-speed -I.. -DRCM2200
+SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -I.. -DRCM2200
 
 all: image.ihx image.bin
 
