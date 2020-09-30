@@ -1,20 +1,20 @@
 SDCC=sdcc
-SDCCFLAGS=-mr2k --opt-code-speed -I..
+SDCCFLAGS=-mr2k --opt-code-speed -I.. -DRCM2200
 
 all: image.ihx image.bin
 
 image.bin: image.ihx
 	objcopy --input-target=ihex --output-target=binary image.ihx image.bin
 
-image.ihx: crt0-rcm2200.rel dhry_1.rel dhry_2.rel portme.rel
+image.ihx: crt0-generic.rel dhry_1.rel dhry_2.rel portme.rel
 	$(SDCC) $(SDCCFLAGS) --no-std-crt0 *.rel -o image.ihx
 
 %.rel: %.c
 	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) $<
 
-crt0-%.rel: ../crt0-noint.s ../targetconfigurations/%/targetstartup.s
-	sdasrab -plosgff -I../targetconfigurations/$* $<
-	mv ../crt0-noint.rel $@
+crt0-generic.rel: ../crt0-generic.s
+	sdasrab -plosgff $<
+	mv ../crt0-generic.rel $@
 
 clean:
 	rm -rf *.rel *.map *.lst *.noi *.lk *.lnk *.sym *.asm *.ihx *.o *.rst *.bin

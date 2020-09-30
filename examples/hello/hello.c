@@ -12,6 +12,9 @@
 #define CLOCK_DOUBLER 0x03
 #endif
 
+// _sdcc_external_startup, if present, will be called very early, before initalization
+// of global objects. This makes it e.g. useful for dealing with watchdogs that might
+// otherwise bite if there are many or large global objects that take a long time to initialize.
 void _sdcc_external_startup(void)
 {
 	// Disable watchdog

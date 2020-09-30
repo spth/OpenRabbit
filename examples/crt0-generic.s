@@ -1,9 +1,10 @@
 ;--------------------------------------------------------------------------
-;  crt0.s - Generic crt0.s for a rabbit 2000
+;  crt0.s - Generic crt0.s for a Rabbit 2000
 ;	derived from "Generic crt0.s for a Z80"
 ;
 ;  Copyright (C) 2000, Michael Hope
-;  Modified for rabbit by Leland Morrison 2011
+;  Modified for Rabbit by Leland Morrison 2011
+;  Copyright (C) 2020, Philipp Klaus Krause
 ;
 ;  This library is free software; you can redistribute it and/or modify it
 ;  under the terms of the GNU General Public License as published by the
@@ -28,15 +29,13 @@
 ;   might be covered by the GNU General Public License.
 ;--------------------------------------------------------------------------
 
-        .module crt0
-       	.globl	_main
+	.module crt0
+	.globl	_main
+	.globl	__sdcc_external_startup
 
 GCSR		.equ	0x00 ; Global control / status register
-WDTTR		.equ	0x09 ; Watchdog timer test register
-GCDR		.equ	0x0f ; Global Clock Doubler Register
 MMIDR		.equ	0x10
 STACKSEG	.equ	0x11
-DATASEG		.equ	0x12
 SEGSIZE		.equ	0x13
 MB0CR		.equ	0x14 ; Memory Bank 0 Control Register
 MB1CR		.equ	0x15 ; Memory Bank 1 Control Register
