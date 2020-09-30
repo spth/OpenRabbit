@@ -19,7 +19,7 @@ int putchar(int c)
 
 void main(void)
 {
-#if 0	// RCM2200
+#if 1	// RCM2200
 	PCDR = 0x01;
 	PECR = 0x82;
 	PEDDR = 0x82;

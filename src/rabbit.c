@@ -444,7 +444,7 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 
 	// send pilot
 	if(verbose)
-		fprintf(stderr, "sending %d pilot\n", pilot.sz);
+		fprintf(stderr, "sending %d secondary loader bytes.\n", pilot.sz);
 	if(dwrite(tty, pb + pilotoffset, pilot.sz) < pilot.sz) {
 		perror("write(pilot) < pilot.sz");
 		free(pb);
