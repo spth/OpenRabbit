@@ -1,2 +1,0 @@
-#define SERIAL_DIVIDER_38400 36
-

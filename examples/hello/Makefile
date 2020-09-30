@@ -1,7 +1,7 @@
 SDCC = sdcc
-SDCCFLAGS = -mr2k -I..
+SDCCFLAGS = -mr2k -I.. --data-loc 0xa000
 
-TARGETS = rcm2200 rcm3209
+TARGETS = RCM2200 RCM3209
 
 HELLO = $(foreach target, $(TARGETS), hello-$(target).bin)
 
@@ -15,13 +15,13 @@ clean:
 hello-%.bin: hello-%.ihx
 	objcopy --input-target=ihex --output-target=binary $< $@
 
-hello-%.ihx: crt0-%.rel hello-%.rel
+hello-%.ihx: crt0-generic.rel hello-%.rel
 	$(SDCC) $(SDCCFLAGS) --no-std-crt0 $^ -o $@
 
-hello-%.rel: hello.c ../targetconfigurations/%/targetconfig.h
-	$(SDCC) $(SDCCFLAGS) -I../targetconfigurations/$* -c $< -o $@
+hello-%.rel: hello.c
+	$(SDCC) $(SDCCFLAGS) -D$* -c $< -o $@
 
-crt0-%.rel: ../crt0-noint.s ../targetconfigurations/%/targetstartup.s
-	sdasrab -plosgff -I../targetconfigurations/$* $<
-	mv ../crt0-noint.rel $@
+crt0-generic.rel: ../crt0-generic.s
+	sdasrab -plosgff $<
+	mv ../crt0-generic.rel $@
 

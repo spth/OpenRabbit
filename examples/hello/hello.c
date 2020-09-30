@@ -3,7 +3,26 @@
 
 #include "r2k.h"
 
-#include "targetconfig.h"
+// Todo: Omit clock doubling to simplify example?
+#if defined(RCM2200)
+#define SERIAL_DIVIDER_38400 18
+#define CLOCK_DOUBLER 0x07 // clock doubler for 11.0592 MHz base
+#elif defined(RCM3209)
+#define SERIAL_DIVIDER_38400 36
+#define CLOCK_DOUBLER 0x03
+#endif
+
+void _sdcc_external_startup(void)
+{
+	// Disable watchdog
+	WDTTR = 0x51;
+	WDTTR = 0x54;
+
+	// normal oscillator, processor and peripheral from main clock, no periodic interrupt
+	GCSR = 0x08;
+
+	GCDR = CLOCK_DOUBLER;
+}
 
 int putchar(int c)
 {
@@ -19,19 +38,6 @@ int putchar(int c)
 
 void main(void)
 {
-#if 1	// RCM2200
-	PCDR = 0x01;
-	PECR = 0x82;
-	PEDDR = 0x82;
-	PEDR = 0x80;
-#else	// RCM3209
-	PGCR = 0x00;
-	PGFR = 0x00;
-	PGDCR = 0xC0;
-	PGDR = 0x80;	// bit 6 and 7 set to 0 for LED ON
-	PGDDR = 0xC4;
-#endif
-
 	PCFR = 0x40;	// Use pin PC6 as TXA
 
 	TAT4R = SERIAL_DIVIDER_38400 - 1;	// Value in register is one less than the divider used (e.g. a value of 0 will result in clock division by 1).

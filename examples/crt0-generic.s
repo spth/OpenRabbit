@@ -52,30 +52,10 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 	ld	a, #1
 	ld	iir, a
 
-	; todo: move watchdog, gcsr, gcdr setup to __sdcc_external_startup c code!
-
-	; disable watchdog
-	ld	a, #0x51;
-	ioi
-	ld	(WDTTR), a
-	ld	a, #0x54;
-	ioi
-	ld	(WDTTR), a
-
-	; normal oscillator, processor and peripheral from main clock
-	; no periodic interrupt
-	ld	a, #0x08
-	ioi
-	ld	(GCSR), a
-
-	ld	a, #0x07
-	ioi
-	ld	(GCDR), a
-
 	; Configure physical address space.
 	; Leave Flash at default slow at /OE0, /CS0
 	; Assume slow RAM at /CS1, /OE1, /WE1
-	ld	a, 0x05
+	ld	a, #0x05
 	ioi
 	ld	(MB2CR), a;
 
@@ -92,6 +72,8 @@ MB3CR		.equ	0x17 ; Memory Bank 3 Control Register
 
 	; Set stack pointer directly above top of stack segment
 	ld	sp, #0xe000
+
+	call __sdcc_external_startup
 
 	; Initialise global variables
 	call	gsinit
