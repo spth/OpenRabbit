@@ -170,6 +170,25 @@ _exit::
 
 	.area   _GSINIT
 gsinit::
+	ld	bc, #l__DATA
+	ld	a, b
+	or	a, c
+	jr	Z, zeroed_data
+	ld	hl,	#s__DATA
+	ld	(hl), #0x00
+	dec	bc
+	ld	a, b
+	or	a, c
+	jr	Z, zeroed_data
+	ld	e, l
+	ld	d, h
+	inc	de
+zero_loop:
+	ldi	; Work around new ldir wait state bug.
+	jp	LO, zero_loop
+
+zeroed_data:
+
 	ld	bc, #l__INITIALIZER
 	ld	a, b
 	or	a, c
