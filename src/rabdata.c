@@ -148,6 +148,12 @@ const char *rabbit_cpuname(uint16_t cpuid){
 		return("Rabbit 3000");
 	case 0x0101:
 		return("Rabbit 3000A");
+	case 0x0200:
+		return("Rabbit 4000");
+	case 0x0300:
+		return("Rabbit 5000");
+	case 0x0400:
+		return("Rabbit 6000");
 	default:
 		return("Unknown processor");
 	}
