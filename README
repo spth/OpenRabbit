@@ -23,6 +23,11 @@ Options:
 
 --help     Showusage information summary.
 --verbose  Increase verbosity (this option can be used up to 3 times, with each additional use increasing verbosity).
+--slow     Workaround for tcdrain() driver bugs (see below)
+
+Serial cable with USB-to-serial convverter:
+
+The use of a serial cable with an external USB-to-serial converter can be problematic. Most, but not all of them work when using the --slow option.
 
 History:
 

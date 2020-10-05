@@ -1,3 +1,6 @@
+????-??-??	v0.2.3
+Add --slow option to work around tcdrain() driver bugs. Makes most USB-to-serial converters work.
+
 2020-09-25	v0.2.2
 Improve support for Dynamic C 9 pilot.bin, replace command-line option for Dynamic C 8 pilot.bin format by autodetection. Add --verbose option to control verbosity.
 

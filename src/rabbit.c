@@ -47,8 +47,6 @@
 #include "rabdata.h"
 #include "rabio.h"
 
-extern int verbose;
-
 int rabbit_reset(int tty) {
 	int s;
 
@@ -278,11 +276,6 @@ static int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 		perror("triplet write < 3");
 		return(-1);
 	}
-	// Ensure the triplet has actually been sent. We used to do this with an usleep(15000) instead, but using tcdrain() is faster. However, apparently tcdrain() doesn't work reliably with the PL2303 variants. Tested with Pl2303RA, PL2303GT and PL2303TA.
-	if(tcdrain(tty)) {
-		perror("failed to drain serial buffers");
-		return(-1);
-	}
 	return(0);
 }
 
@@ -290,6 +283,15 @@ int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
 	for(int i = 0; i < n; i++)
 		if(rabbit_triplet(tty, triplets + i * 3))
 			return(-1);
+
+	// Ensure the triplets have actually been sent. We used to always do this with an usleep(15000) per triplet instead, but using tcdrain() is faster. However, apparently tcdrain() doesn't work reliably with many USB-to-serial coverters.
+	if(tcdrain(tty)) {
+		perror("failed to drain serial buffers");
+		return(-1);
+	}
+	for (unsigned int s = 0; s < slow; s++)
+		usleep(15000ul * n);
+
 	return(0);
 }
 

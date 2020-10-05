@@ -44,5 +44,8 @@ int rabbit_program(int tty, const char *coldload, const char *pilot, const char 
 // Start program in flash.
 int rabbit_start(int tty);
 
+extern unsigned int verbose;
+extern unsigned int slow;
+
 #endif
 

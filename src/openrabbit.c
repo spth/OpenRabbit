@@ -48,7 +48,8 @@
 #include "rabbit.h"
 #include "rabmap.h"
 
-int verbose = 0;
+unsigned int verbose;     // Higher values indicate more verbose output
+unsigned int slow;        // Workaround for broken tcdrain() implementations.
 
 WINDOW *win_watch;
 WINDOW *win_stack;
@@ -442,8 +443,12 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stderr, "Usage: openrabbitfu [--help] [--verbose] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
-	fprintf(stderr, "Usage: openrabbit [--help] [--verbose] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stream, "\nOptions:\n");
+	fprintf(stream, "--help        - Display this help.\n");
+	fprintf(stream, "--verbose     - Be more verbose. Can be use up to 3 times.\n");
+	fprintf(stream, "--slow        - Use workaround for tcdrain() driver bugs - can make some USB-to-serial converters work.\n");
 }
 
 int main(int argc, char **argv) {
@@ -487,6 +492,9 @@ int main(int argc, char **argv) {
 				return(-1);
 			}
 			run = true;
+		}
+		else if (!strcmp(argv[1], "--slow")) {
+			slow++;
 		}
 		else {
 			fprintf(stderr, "Unknown option: %s\n", argv[1]);
