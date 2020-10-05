@@ -1,13 +1,20 @@
 SDCC=sdcc
-SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -I.. -DRCM2200
+SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -I..
 
-all: image.ihx image.bin
+TARGETS = RCM2200 RCM3209
 
-image.bin: image.ihx
-	objcopy --input-target=ihex --output-target=binary image.ihx image.bin
+DHRYSTONES = $(foreach target, $(TARGETS), dhrystone-$(target).bin)
 
-image.ihx: crt0-generic.rel dhry_1.rel dhry_2.rel portme.rel
-	$(SDCC) $(SDCCFLAGS) --no-std-crt0 *.rel -o image.ihx
+all: $(DHRYSTONES)
+
+dhrystone-%.bin: dhrystone-%.ihx
+	objcopy --input-target=ihex --output-target=binary $< $@
+
+dhrystone-%.ihx: crt0-generic.rel dhry_1.rel dhry_2.rel portme-%.rel
+	$(SDCC) $(SDCCFLAGS) --no-std-crt0 $^ -o $@
+
+portme-%.rel: portme.c
+	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) -D$* $< -o $@
 
 %.rel: %.c
 	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) $<
