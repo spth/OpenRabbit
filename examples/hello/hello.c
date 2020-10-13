@@ -17,6 +17,9 @@
 #elif defined(RCM3209)
 #define SERIAL_DIVIDER_19200 36
 
+#elif defined(RCM4110)
+#define SERIAL_DIVIDER_19200 48 // Crystal at 29.5 MHz, clock running at full speed with clock doubler off.
+
 #endif
 
 // _sdcc_external_startup, if present, will be called very early, before initalization
