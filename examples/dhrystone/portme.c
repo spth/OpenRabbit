@@ -23,6 +23,12 @@ unsigned long clock(void);
 #define CLOCK_DOUBLER 0x03
 #define MB0CR_VALUE 0x88 // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
 
+#elif defined(RCM4110)
+#define SERIAL_DIVIDER_38400 24
+#define CLOCK_DOUBLER 0x00 // crystal runs at full target speed, no clock doubler needed
+#define MB0CR_VALUE 0xc8 // Flash 0 wait states with write-protection
+#define MB2CR_VALUE 0xc5 // RAM - 0 wait states
+
 #endif
 
 _Static_assert((MB0CR_VALUE & 0x07) == 0x00, "Lower bits of Flash Memory Bank Control Register should be compatible with reset value");

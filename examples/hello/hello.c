@@ -18,7 +18,7 @@
 #define SERIAL_DIVIDER_19200 36
 
 #elif defined(RCM4110)
-#define SERIAL_DIVIDER_19200 48 // Crystal at 29.5 MHz, clock running at full speed with clock doubler off.
+#define SERIAL_DIVIDER_19200 48 // 29.5 MHz crystal , thus clock running at full speed despite clock doubler off on startup.
 
 #endif
 

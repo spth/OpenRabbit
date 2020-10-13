@@ -541,6 +541,11 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	fprintf(stderr, "numSectors: 0x%04x\n", info.IDBlock.numSectors);
 	fprintf(stderr, "flashSize:  0x%04x\n", info.IDBlock.flashSize);
 
+	if(verbose) {
+	  fprintf(stderr, "Flash speed: %d ns\n", info.IDBlock.flashSpeed);
+	  fprintf(stderr, "RAM speed: %d ns\n", info.IDBlock.ramSpeed);
+	}
+
 	// send flashdata
 	flashdata.sectorSize = info.IDBlock.sectorSize;
 	flashdata.numSectors = info.IDBlock.numSectors;
