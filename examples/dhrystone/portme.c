@@ -6,15 +6,23 @@
 
 unsigned long clock(void);
 
-#if defined(RCM2200)
+#if defined(RCM2020) // RCM2020: 18.4 MHz
+#define SERIAL_DIVIDER_38400 15
+#define CLOCK_DOUBLER 0x07
+#define MB0CR_VALUE 0xc8 // Flash 0 wait states with write-protection
+#define MB2CR_VALUE 0xc5 // RAM - 0 wait states
+#elif defined(RCM2200) // RCM2200: 22.1 MHz
+
 #define SERIAL_DIVIDER_38400 18
 #define CLOCK_DOUBLER 0x07 // clock doubler for 11.0592 MHz base
 #define MB0CR_VALUE 0xc8 // What Dynamic C 9 uses for RCM2200 Flash - 0 wait states (but with write-protection added)
 #define MB2CR_VALUE 0xc5 // What Dynamic C 9 uses for RCM2200 RAM - 0 wait states
+
 #elif defined(RCM3209)
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03
 #define MB0CR_VALUE 0x88 // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
+
 #endif
 
 _Static_assert((MB0CR_VALUE & 0x07) == 0x00, "Lower bits of Flash Memory Bank Control Register should be compatible with reset value");

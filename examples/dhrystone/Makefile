@@ -1,7 +1,7 @@
 SDCC=sdcc
 SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -I..
 
-TARGETS = RCM2200 RCM3209
+TARGETS = RCM2200 RCM2020 #RCM3209 - todo: add MB2CR_VALUE in portme.c, then enable here.
 
 DHRYSTONES = $(foreach target, $(TARGETS), dhrystone-$(target).bin)
 

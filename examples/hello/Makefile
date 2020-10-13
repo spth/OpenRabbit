@@ -1,7 +1,7 @@
 SDCC = sdcc
 SDCCFLAGS = -mr2k -I.. --data-loc 0xa000
 
-TARGETS = RCM2200 #RCM3209 - todo: add MB2CR_VALUE in portme.c, then enable here.
+TARGETS = RCM2020 RCM2200 RCM3110 RCM3209
 
 HELLO = $(foreach target, $(TARGETS), hello-$(target).bin)
 

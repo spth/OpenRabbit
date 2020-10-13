@@ -1,4 +1,0 @@
-Work in progress for bringing Rabbit hardware up using SDCC/OpenRabbit.
-
-Run `make` to create `hello-*.bin` for all targets.
-
