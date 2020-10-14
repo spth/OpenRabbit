@@ -4,21 +4,7 @@
 
 #include "r2k.h"
 
-unsigned long clock(void);
-
-#if defined(RCM2200)
-#define SERIAL_DIVIDER_38400 18
-#define CLOCK_DOUBLER 0x07 // clock doubler for 11.0592 MHz base
-#define MB0CR_VALUE 0xc8 // What Dynamic C 9 uses for RCM2200 Flash - 0 wait states (but with write-protection added)
-#define MB2CR_VALUE 0xc5 // What Dynamic C 9 uses for RCM2200 RAM - 0 wait states
-#elif defined(RCM3209)
-#define SERIAL_DIVIDER_38400 36
-#define CLOCK_DOUBLER 0x03
-#define MB0CR_VALUE 0x88 // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
-#endif
-
-_Static_assert((MB0CR_VALUE & 0x07) == 0x00, "Lower bits of Flash Memory Bank Control Register should be compatible with reset value");
-_Static_assert((MB2CR_VALUE & 0x0f) == 0x05, "Lower bits of RAM Memory Bank control Register should be the same as in crt0");
+#include "targetconfigurations.h"
 
 void _sdcc_external_startup(void)
 {
