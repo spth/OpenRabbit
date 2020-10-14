@@ -1,4 +1,4 @@
-// "Hello, world!" On serial port A @ 19200 baud.
+// "Hello, world!" on serial port A @ 19200 baud.
 
 #include <stdint.h>
 #include <stdio.h>
