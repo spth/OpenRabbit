@@ -10,17 +10,14 @@ all: $(DHRYSTONES)
 dhrystone-%.bin: dhrystone-%.ihx
 	objcopy --input-target=ihex --output-target=binary $< $@
 
-dhrystone-%.ihx: ../crt0-generic.rel dhry_1.rel dhry_2.rel portme-%.rel
-	$(SDCC) $(SDCCFLAGS) --no-std-crt0 $^ -o $@
+dhrystone-%.ihx: dhry_1.rel dhry_2.rel portme-%.rel
+	$(SDCC) $(SDCCFLAGS) $^ -o $@
 
 portme-%.rel: portme.c
 	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) -D$* $< -o $@
 
 %.rel: %.c
 	$(SDCC) --fverbose-asm -c $(SDCCFLAGS) $<
-
-../crt0-generic.rel: ../crt0-generic.s
-	sdasrab -plosgff $<
 
 clean:
 	rm -rf *.rel *.map *.lst *.noi *.lk *.lnk *.sym *.asm *.ihx *.o *.rst *.bin
