@@ -45,11 +45,11 @@ _RABREG(0x1C, BDCR);  // Breakpoint/Debug Control Register
 _RABREG(0x2C, GROM);  // Global RAM Configuration Register
 _RABREG(0x2D, GRAM);  // Global ROM Configuration Register
 
-_RABREG(0x38, PGDR);  // Port F Data Register
-_RABREG(0x3C, PGCR);  // Port F Control Register
-_RABREG(0x3D, PGFR);  // Port F Function Register
-_RABREG(0x3E, PGDCR); // Port F Drive Control Register
-_RABREG(0x3F, PGDDR); // Port F Data Direction Register
+_RABREG(0x38, PFDR);  // Port F Data Register
+_RABREG(0x3C, PFCR);  // Port F Control Register
+_RABREG(0x3D, PFFR);  // Port F Function Register
+_RABREG(0x3E, PFDCR); // Port F Drive Control Register
+_RABREG(0x3F, PFDDR); // Port F Data Direction Register
 
 _RABREG(0x47, PBDDR); // Port B Data Direction Register
 
@@ -85,16 +85,16 @@ _RABREG(0xF5, SDER);  // Serial Port D Extended Register
 _RABREG(0xC8, SEDR);  // Serial Port E Data Register
 _RABREG(0xC9, SEAR);  // Serial Port E Address Register
 _RABREG(0xCA, SELR);  // Serial Port E Long Stop Register
-_RABREG(0xCB, SEDR);  // Serial Port E Status Register
-_RABREG(0xCC, SEAR);  // Serial Port E Control Register
-_RABREG(0xCD, SELR);  // Serial Port E Extended Register
+_RABREG(0xCB, SESR);  // Serial Port E Status Register
+_RABREG(0xCC, SECR);  // Serial Port E Control Register
+_RABREG(0xCD, SEER);  // Serial Port E Extended Register
 
 _RABREG(0xD8, SFDR);  // Serial Port F Data Register
 _RABREG(0xD9, SFAR);  // Serial Port F Address Register
 _RABREG(0xDA, SFLR);  // Serial Port F Long Stop Register
-_RABREG(0xDB, SFDR);  // Serial Port F Status Register
-_RABREG(0xDC, SFAR);  // Serial Port F Control Register
-_RABREG(0xDD, SFLR);  // Serial Port F Extended Register
+_RABREG(0xDB, SFSR);  // Serial Port F Status Register
+_RABREG(0xDC, SFCR);  // Serial Port F Control Register
+_RABREG(0xDD, SFER);  // Serial Port F Extended Register
 
 #endif
 

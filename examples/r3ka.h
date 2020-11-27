@@ -34,7 +34,7 @@
 #define _RABREG(addr, reg) __sfr __banked __at(addr) reg
 #endif
 
-#include "r3ka.h"
+#include "r3k.h"
 
 _RABREG(0x000C, SWDTR);  // Secondary Watchdog Timer Register
 

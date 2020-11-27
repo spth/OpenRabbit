@@ -118,7 +118,5 @@ _RABREG(0xF1, SDAR);  // Serial Port D Adress Register
 _RABREG(0xF3, SDSR);  // Serial Port D Status Register
 _RABREG(0xF4, SDCR);  // Serial Port D Control Register
 
-#undef _RABREG
-
 #endif
 
