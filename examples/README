@@ -1,0 +1,22 @@
+This directory contains some example programs to be compiled with SDCC 4.0.5 or later. No Dynamic C is required.
+
+hello - minimal setup to print "Hello, world!" via serial port A (19200 baud)
+dhrystone - Dhrystone benchmark: setup for good performance, serial output (38400 baud)
+whetstone - Whetstone benchmark: setup for good performance, serial output (38400 baud)
+
+Invoking make in the respective directory will build the example for a number of target platforms:
+
+RCM2020 - Rabbit 2000@18.4 MHz
+RCM2200 - Rabbit 2000@22.1 MHz
+RCM3110 - Rabbit 3000@29.4 MHz
+RCM3209 - Rabbit 3000@44.2 MHz
+RCM3319 - Rabbit 3000@44.2 MHz
+RCM3750 - Rabbit 3000@22.1 MHz
+RCM4110 - Rabbit 4000@29.5 MHz¹
+
+¹ The toolchain doesn't fully support the Rabbit 4000. The examples use the Rabbit 3000 compability mode of the Rabbit 4000 and the 8-bit memory mode.
+
+To support further board:
+hello - just a suitable SERIAL_DIVIDER_19200 is needed in hello.c and an additional TARGET in teh Makefile.
+dhrystone, whetstone - add suitable values in targetconfigurations.h, add the target to the respective makefile.
+
