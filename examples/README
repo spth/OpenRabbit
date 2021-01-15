@@ -16,7 +16,7 @@ RCM4110 - Rabbit 4000@29.5 MHz¹
 
 ¹ The toolchain doesn't fully support the Rabbit 4000. The examples use the Rabbit 3000 compability mode of the Rabbit 4000 and the 8-bit memory mode.
 
-To support further board:
-hello - just a suitable SERIAL_DIVIDER_19200 is needed in hello.c and an additional TARGET in teh Makefile.
-dhrystone, whetstone - add suitable values in targetconfigurations.h, add the target to the respective makefile.
+To support further boards:
+hello - just a suitable SERIAL_DIVIDER_19200 is needed in hello.c and an additional TARGET in the Makefile.
+dhrystone, whetstone - add suitable values in targetconfigurations.h, add the target to the respective Makefile.
 

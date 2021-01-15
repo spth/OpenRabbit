@@ -1,5 +1,5 @@
 SDCC=sdcc
-SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -DRCM2200 -I..
+SDCCFLAGS=-mr2k --data-loc 0xa000 --opt-code-speed -I..
 
 TARGETS = RCM2200 RCM2020 RCM3319 RCM3750 RCM4110 #RCM3209 - todo: add MB2CR_VALUE in targetconfigurations.h, then enable here.
 
