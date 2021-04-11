@@ -296,7 +296,7 @@ printf ("%ld \n", (long int)Microseconds);
     printf ("Dhrystones per Second:                      ");
     //printf ("%6.1f \n", Dhrystones_Per_Second);
 printf ("%ld \n", (long int)Dhrystones_Per_Second);
-    printf ("\n");
+    printf ("\n\x04");
   }
   
 }

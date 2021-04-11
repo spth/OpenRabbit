@@ -678,6 +678,8 @@ int rabbit_start(int tty)
 	if(rabbit_reset(tty))
 		return(-1);
 
+	usleep(50000); // Hack: the number 50000 here is just a guess. Without the usleep, we sometimes hang.
+
 	if(rabbit_triplets(tty, start, sizeof(start) / 3))
 		return(-1);
 }
