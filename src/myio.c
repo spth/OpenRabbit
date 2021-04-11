@@ -158,6 +158,12 @@ int tty_setbaud(int tty, unsigned long baud) {
 	case 2400:
 		b = B2400;
 		break;
+	case 19200:
+		b = B19200;
+		break;
+	case 38400:
+		b = B38400;
+		break;
 	case 57600:
 		b = B57600;
 		break;

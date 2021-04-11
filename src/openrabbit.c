@@ -443,12 +443,14 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
 	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 	fprintf(stream, "\nOptions:\n");
 	fprintf(stream, "--help        - Display this help.\n");
-	fprintf(stream, "--verbose     - Be more verbose. Can be use up to 3 times.\n");
+	fprintf(stream, "--verbose     - Be more verbose. Can be used up to 3 times to increase verbosity.\n");
 	fprintf(stream, "--slow        - Use workaround for tcdrain() driver bugs - can make some USB-to-serial converters work.\n");
+	fprintf(stream, "--run         - Run program immediately after programming.\n");
+	fprintf(stream, "--serialout   - Display data from serial line at 38400 baud until EOT.\n");
 }
 
 int main(int argc, char **argv) {
@@ -469,9 +471,10 @@ int main(int argc, char **argv) {
 	int i,c;
 	bool dc8pilot;
 	bool run = false;
+	bool serialout = false;
 
 	// are we the just the rfu?
-	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0])-strlen("openrabbitfu"), "openrabbitfu"))
+	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0]) - strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
 	// Handle options
@@ -486,6 +489,9 @@ int main(int argc, char **argv) {
 		else if (!strcmp(argv[1], "--verbose")) {
 			verbose++;
 		}
+		else if (!strcmp(argv[1], "--slow")) {
+			slow++;
+		}
 		else if (!strcmp(argv[1], "--run")) {
 			if(!rfu) {
 				usage(stderr);
@@ -493,8 +499,12 @@ int main(int argc, char **argv) {
 			}
 			run = true;
 		}
-		else if (!strcmp(argv[1], "--slow")) {
-			slow++;
+		else if (!strcmp(argv[1], "--serialout")) {
+			if(!rfu) {
+				usage(stderr);
+				return(-1);
+			}
+			serialout = true;
 		}
 		else {
 			fprintf(stderr, "Unknown option: %s\n", argv[1]);
@@ -535,6 +545,17 @@ int main(int argc, char **argv) {
 	if(run) {
 		puts("Rebooting and running installed code.");
 		int ret = rabbit_start(tty);
+
+		// Show data received on serial line
+	        if(serialout) {
+			tty_setbaud(tty, 38400);
+			char c;
+			do {
+				if(read (tty, &c, 1) < 1)
+					break;
+				putchar (c);
+			} while (c != 4); // Break at EOT
+		}
 		close(tty);
 		return(ret);
 	}
