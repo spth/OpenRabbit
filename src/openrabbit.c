@@ -443,7 +443,7 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] <coldload.bin> <pilot.bin> <project.bin> <cable device>\n");
+	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] <coldload.bin> <pilot.bin> <project.bin|project.ihx> <cable device>\n");
 	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 	fprintf(stream, "\nOptions:\n");
 	fprintf(stream, "--help        - Display this help.\n");

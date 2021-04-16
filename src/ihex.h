@@ -1,7 +1,8 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Lourens Rozema                                  *
- *   ik@lourensrozema.nl                                                   *
- *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
+ *   Intel hex read and write utility functions                            *
+ *                                                                         *
+ *   Copyright (c) Valentin Dudouyt, 2004 2012 - 2014                      *
+ *   Copyright (c) Philipp Klaus Krause, 2021                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,23 +20,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef OPENRABBIT_MYIO_H
-#define OPENRABBIT_MYIO_H 1
+#ifndef IHEX_H
+#define IHEX_H
 
-#include <unistd.h>
-#include <stdbool.h>
+// Read Intel hex file.
+// Returns number of bytes read on success, -1 otherwise.
+int ihex_read(FILE *pFile, unsigned char *buf, unsigned int start, unsigned int end);
 
-bool fileext_is(const char *filename, const char *ext);
-ssize_t dwrite(int fd, const void *buf, size_t count);
-ssize_t dread(int fd, void *buf, size_t count);
-unsigned char *load(unsigned char *pb, const char *file, int *sz);
-int tty_setbaud(int tty, unsigned long baud);
-void dtiming(int *rs, int *ws);
-
-extern unsigned long dwrite_count;
-extern unsigned long dwrite_time;
-extern unsigned long dread_count;
-extern unsigned long dread_time;
+// Write Intel hex file.
+// Returns 0 on success, -1 otherwise.
+int ihex_write(FILE *pFile, unsigned char *buf, unsigned int start, unsigned int end);
 
 #endif
 

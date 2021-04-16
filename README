@@ -21,9 +21,11 @@ Will upload the user program user.bin onto the target via cable attached to /dev
 
 Options:
 
---help     Showusage information summary.
---verbose  Increase verbosity (this option can be used up to 3 times, with each additional use increasing verbosity).
---slow     Workaround for tcdrain() driver bugs (see below)
+--help       Showusage information summary.
+--verbose    Increase verbosity (this option can be used up to 3 times, with each additional use increasing verbosity).
+--slow       Workaround for tcdrain() driver bugs (see below for details).
+--run        Run program immediately after programming.
+--serialout  Display data from serial line at 38400 baud until EOT
 
 Serial cable with USB-to-serial convverter:
 

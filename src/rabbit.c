@@ -46,6 +46,7 @@
 #include "bios/dkcore.lib"
 #include "rabdata.h"
 #include "rabio.h"
+#include "ihex.h"
 
 int rabbit_reset(int tty) {
 	int s;
@@ -542,8 +543,8 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	fprintf(stderr, "flashSize:  0x%04x\n", info.IDBlock.flashSize);
 
 	if(verbose) {
-	  fprintf(stderr, "Flash speed: %d ns\n", info.IDBlock.flashSpeed);
-	  fprintf(stderr, "RAM speed: %d ns\n", info.IDBlock.ramSpeed);
+		fprintf(stderr, "Flash speed: %d ns\n", info.IDBlock.flashSpeed);
+		fprintf(stderr, "RAM speed: %d ns\n", info.IDBlock.ramSpeed);
 	}
 
 	// send flashdata
@@ -557,8 +558,25 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 		return(-1);
 
 	// load project.bin
-	if((pb = load(pb, project, &sz)) == NULL)
-		return(-1);
+	bool ihex_format = fileext_is (project, ".ihx") || fileext_is (project, ".hex");
+	if (ihex_format) {
+		if (verbose)
+			fprintf (stderr, "Due to its file extension, %d is considered to be in Intel hex format (of up to 256 KB size).\n", project);
+		FILE *f = fopen(project, "r");
+		if (!f) {
+			fprintf (stderr, "Failed to open file %s.\n", project);
+			return(-1);
+		}
+		pb = malloc(256 * 1024);
+		sz = ihex_read(f, pb, 0, 256 * 1024);
+		fclose(f);
+		if (sz < 0)
+			return(-1);
+	}
+	else {
+		if((pb = load(pb, project, &sz)) == NULL)
+			return(-1);
+	}
 
 	// erase flash
 	flash = WP_DATA_SIZE+sz;

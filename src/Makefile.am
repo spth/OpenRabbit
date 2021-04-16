@@ -1,6 +1,6 @@
 bin_PROGRAMS = openrabbit
 dist_bin_SCRIPTS = openrabbitfu
-openrabbit_SOURCES = openrabbit.c myio.c rabbit.c rabdata.c rabio.c rabmap.c
+openrabbit_SOURCES = openrabbit.c myio.c rabbit.c rabdata.c rabio.c rabmap.c ihex.c
 
 # set the include path found by configure
 AM_CPPFLAGS= $(all_includes)

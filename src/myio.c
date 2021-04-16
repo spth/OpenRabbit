@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "myio.h"
 
@@ -38,6 +39,11 @@ extern int verbose;
 unsigned long dwrite_count = 0;
 unsigned long dread_count = 0;
 unsigned long long drw_time = 0;
+
+bool fileext_is(const char *filename, const char *ext) {
+	char *ext_begin = strrchr(filename, '.');
+	return(ext_begin && strcmp(ext_begin, ext) == 0);
+}
 
 ssize_t dwrite(int fd, const void *buf, size_t count) {
 	ssize_t r;
