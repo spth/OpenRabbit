@@ -561,7 +561,7 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	bool ihex_format = fileext_is (project, ".ihx") || fileext_is (project, ".hex");
 	if (ihex_format) {
 		if (verbose)
-			fprintf (stderr, "Due to its file extension, %d is considered to be in Intel hex format (of up to 256 KB size).\n", project);
+			fprintf (stderr, "Due to its file extension, \"%s\" is considered to be in Intel hex format (of up to 256 KB size).\n", project);
 		FILE *f = fopen(project, "r");
 		if (!f) {
 			fprintf (stderr, "Failed to open file %s.\n", project);
@@ -696,7 +696,7 @@ int rabbit_start(int tty)
 	if(rabbit_reset(tty))
 		return(-1);
 
-	usleep(100000); // Hack: the number 50000 here is just a guess. Without the usleep, we often hang, with usleep (50000) sometimes.
+	usleep(250000); // Hack: the number 250000 here is just a guess. Without the usleep, we often hang, with usleep (50000) sometimes.
 
 	if(rabbit_triplets(tty, start, sizeof(start) / 3))
 		return(-1);
