@@ -68,7 +68,7 @@ int rabbit_reset(int tty) {
 	}
 
 	// wait a bit
-	usleep(250000);
+	usleep(400000); // Originally, this was a 250 ms wait. But reset was often unreliable. The 400 ms wait works much better.
 
 	// Deassert DTR (i.e drive /reset high)
 	s &= ~TIOCM_DTR;
