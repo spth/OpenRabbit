@@ -1,8 +1,8 @@
 ????-??-??	v0.2.3
-Add --slow option to work around tcdrain() driver bugs. Makes most USB-to-serial converters work. Report memory speeds from id block in --verbose output.
+Add --slow option to work around tcdrain() driver bugs. Makes most USB-to-serial converters work. Report memory speeds from id block in --verbose output. Pull reset line low for 400 ms (instead of 250 ms) for more reliable reset.
 
 2020-09-25	v0.2.2
-Improve support for Dynamic C 9 pilot.bin, replace command-line option for Dynamic C 8 pilot.bin format by autodetection. Add --verbose option to control verbosity. Pull reset line low for 400 ms (instead of 250 ms) for more reliable reset.
+Improve support for Dynamic C 9 pilot.bin, replace command-line option for Dynamic C 8 pilot.bin format by autodetection. Add --verbose option to control verbosity.
 
 2020-09-20	v0.2.1
 Improve speed. Command-line option for Dynamic C 8 pilot.bin format.
