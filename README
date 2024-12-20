@@ -27,14 +27,16 @@ Options:
 --run        Run program immediately after programming.
 --serialout  Display data from serial line at 38400 baud until EOT
 
-Serial cable with USB-to-serial convverter:
-
-The use of a serial cable with an external USB-to-serial converter can be problematic. Most, but not all of them work when using the --slow option.
-
 History:
 
 OpenRabbit was initially developed and maintained by Lourens Rozema. His latest release was 0.1.1.
 The original homepage can be found at http://www.lourensrozema.nl/index.php/openrabbit.inc
 
 This repository has been created by Philipp Klaus Krause (with endorsement by Lourens Rozema) to continue development.
+
+Troubleshooting (if operation is unreliable, or it doesn't work at all):
+
+* Check if you or your cable is using a full-speed USB-to-serial interface (e.g. the FT232R in the "USB Programming Cable") with a USB High-Speed or faster hub. This is often problematic. Suggested workaround: Do not use USB hubs, or use a high-speed USB-to-serial interface (e.g. FT232H).
+* If you are using a serial programming cable with a USB-to-serial converter, try --slow to work around a Linux driver bug (https://bugzilla.kernel.org/show_bug.cgi?id=209359). Most, but not all USB-to-serial converters work when using the --slow option.
+* If Openrabbit works without --serial, but is unreliable with --serial: this is a known bug: https://github.com/spth/OpenRabbit/issues/22, no fix or worjaroundis currently known (other than just trying again).
 
