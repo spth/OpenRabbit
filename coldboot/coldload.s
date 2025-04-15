@@ -1,4 +1,5 @@
 ; Copyright (c) 2020 Digi International Inc.
+; Copyright (c) 2025 Philipp Klaus Krause
 ;
 ; This Source Code Form is subject to the terms of the Mozilla Public
 ; License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +8,7 @@
 ; This file is the source for coldload.bin. It has been translated from
 ; Dynamic C syntax to sdasrab syntax by Philipp Klaus Krause in 2020.
 ; It can be assembled as follows:
-; ~/sdcc-trunk/sdcc/bin/sdasrab -o coldload.s
+; sdasrab -o coldload.s
 ; sdcc -mr2k --code-loc 0 --no-std-crt0 coldload.rel
 ; objcopy --input-target=ihex --output-target=binary coldload.ihx coldload_not3.bin
 ; makecold coldload_not3.bin coldload.bin
@@ -56,13 +57,15 @@ wait_for_zero:
 timing_loop:
 	inc	bc                           ; increment counter
 	push	bc                           ; save counter
-	ld	b, #0x98                     ; empirical loop value
-		                             ; (timed for 2 wait states)
 	ld	hl, #WDTCR
+
+; Dynamic C 9-style delay loop - works for Rabbit 2000 to Rabbit 4000
+	ld	b, #0x98                     ; empirical loop value (timed for 2 wait states)
 delay_loop:
 	ioi
 	ld	(hl), #0x5a                  ; hit watchdog
-	djnz	delay_loop
+	djnz	delay_loop                   ; timing of djnz differs on Rabbit 2000/3000/4000 vs. 5000/6000. Could be a problem for Rabbit 5000/6000.
+
 	pop	bc                           ; restore counter
 	ioi
 	ld	(RTC0R), a                   ; fill RTC registers

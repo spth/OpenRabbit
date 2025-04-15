@@ -1,6 +1,6 @@
 This directory contains files used to build coldboot.bin and pilot.bin, helper firmware used in uploading programs to the Rabbit.
 
-Uploading via Openrabbit is a multi-stage process (similar to Dynamic)
+Uploading via Openrabbit is a multi-stage process (similar to Dynamic C)
 
 * Put Rabbit into cold-bootmode
 * Load initial loader (coldboot.bin) in triplet format at 2400 bps

@@ -272,6 +272,8 @@ int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *d
 	return(ret);
 }
 
+// Send triplets consisting of upper address byte, followed by low address byte followed by data byte.
+// If the most siognificant bit of the address is set, an internal i/o location is written instead of memory.
 static int rabbit_triplet(int tty, const unsigned char triplet[3]) {
 	if(dwrite(tty, triplet, 3) < 3) {
 		perror("triplet write < 3");
@@ -299,8 +301,8 @@ int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
 int rabbit_coldload(int tty, const char *file) {
 	int s;
 	const unsigned char pverify[12] = { 0x80, 0x09, 0x51, 0x80, 0x09, 0x54, 0x80, 0x0e, 0x30, 0x80, 0x0e, 0x20};
-	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 };
-	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 };
+	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 }; // Set some value at parallel port C (why?), then set status pin low.
+	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 }; // Set status pin high, then exit program fetch mode.
 	unsigned char *pb = 0;
 	int sz;
 	bool pverify_failed = false;
@@ -342,7 +344,7 @@ int rabbit_coldload(int tty, const char *file) {
 	if(pverify_failed)
 		fprintf(stderr, "Warning: Processor verification sequence failed!\n");
 
-	// tell rabbit initial loader is comming.
+	// Tell Rabbit initial loader is comming.
 	if(rabbit_triplets(tty, coldload, sizeof(coldload) / 3)) {
 		free(pb);
 		return(-1);
