@@ -443,8 +443,8 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] <coldload.bin> <pilot.bin> <project.bin|project.ihx> <cable device>\n");
-	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] <coldload.bin> <pilot.bin> <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin|project.ihx> <cable device>\n");
+	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 	fprintf(stream, "\nOptions:\n");
 	fprintf(stream, "--help        - Display this help.\n");
 	fprintf(stream, "--verbose     - Be more verbose. Can be used up to 3 times to increase verbosity.\n");
@@ -472,8 +472,10 @@ int main(int argc, char **argv) {
 	bool dc8pilot;
 	bool run = false;
 	bool serialout = false;
+	const char *coldloadfilename = NULL;
+	const char *pilotfilename = NULL;
 
-	// are we the just the rfu?
+	// Are we the just the rfu?
 	if(strlen(argv[0]) >= strlen("openrabbitfu") && !strcmp(argv[0]+strlen(argv[0]) - strlen("openrabbitfu"), "openrabbitfu"))
 		rfu = 1;
 
@@ -488,6 +490,24 @@ int main(int argc, char **argv) {
 		}
 		else if (!strcmp(argv[1], "--verbose")) {
 			verbose++;
+		}
+		else if (!strcmp(argv[1], "--coldload")) {
+			if (argc <= 2) {
+				usage(stderr);
+				return(-1);
+			}
+			coldloadfilename = argv[2];
+			memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+			argc--;
+		}
+		else if (!strcmp(argv[1], "--pilot")) {
+			if (argc <= 2) {
+				usage(stderr);
+				return(-1);
+			}
+			pilotfilename = argv[2];
+			memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+			argc--;
 		}
 		else if (!strcmp(argv[1], "--slow")) {
 			slow++;
@@ -517,7 +537,7 @@ int main(int argc, char **argv) {
 	}
 
 	// check non-option argument count
-	if(argc != (rfu ? 5 : 8)) {
+	if(argc != (rfu ? 3 : 6)) {
 		usage(stderr);
 		return(1);
 	}
@@ -536,7 +556,7 @@ int main(int argc, char **argv) {
 	}
 
 	// program the damn thing
-	if(rabbit_program(tty, argv[1], argv[2], argv[3], &dc8pilot)) {
+	if(rabbit_program(tty, coldloadfilename, pilotfilename, argv[1], &dc8pilot)) {
 		close(tty);
 		return(3);
 	}

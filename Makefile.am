@@ -8,7 +8,7 @@ else
   COLDBOOT =
 endif
 
-SUBDIRS = src $(COLDBOOT)
+SUBDIRS = $(COLDBOOT) src
 
 dist_doc_DATA = README ChangeLog
 

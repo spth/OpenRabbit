@@ -1,7 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Lourens Rozema                                  *
- *   ik@lourensrozema.nl                                                   *
- *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
+ *   Copyright (c) 2004 by Lourens Rozema ik@lourensrozema.nl              *
+ *   Copyright (c) 2020-2025 by Philipp Klaus Krause                       * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -39,6 +38,7 @@
 
 #define RFU_VERSION 0x02
 
+#include "../config.h"
 #include "rabbit.h"
 #include "myio.h"
 #include "mytypes.h"
@@ -68,7 +68,7 @@ int rabbit_reset(int tty) {
 	}
 
 	// wait a bit
-	usleep(400000); // Originally, this was a 250 ms wait. But reset was often unreliable. The 400 ms wait works much better.
+	usleep(400000); // Originally, this was a 250 ms wait. But reset was often unreliable. The 400 ms wait works much better (Dynamic C 10 uses 500ms, Dynamic C 9 uses less).
 
 	// Deassert DTR (i.e drive /reset high)
 	s &= ~TIOCM_DTR;
@@ -298,21 +298,42 @@ int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
 	return(0);
 }
 
-int rabbit_coldload(int tty, const char *file) {
+int rabbit_coldload(int tty, const char *coldloadfilename) {
 	int s;
-	const unsigned char pverify[12] = { 0x80, 0x09, 0x51, 0x80, 0x09, 0x54, 0x80, 0x0e, 0x30, 0x80, 0x0e, 0x20};
-	const unsigned char coldload[6] = { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 }; // Set some value at parallel port C (why?), then set status pin low.
-	const unsigned char colddone[6] = { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 }; // Set status pin high, then exit program fetch mode.
-	unsigned char *pb = 0;
+	const unsigned char pverify[12] =  { 0x80, 0x09, 0x51, 0x80, 0x09, 0x54, 0x80, 0x0e, 0x30, 0x80, 0x0e, 0x20};
+	const unsigned char coldload[6] =  { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 }; // Set some value at parallel port C (why? Dynamic C 9, but not Dynamic C 10 does this), then set status pin low.
+	const unsigned char colddone[6] =  { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 }; // Set status pin high, then exit program fetch mode.
+	const unsigned char enablecs3[3] = { 0x80, 0x14, 0x43};                    // Set MB0CR for internal RAM
+
+	unsigned char *pb;
+	unsigned char *pbfile = NULL;
+
+#if defined(HAS_COLDBOOT)
+	unsigned char default_coldloader[] = {
+#embed "../coldboot/coldload.bin"
+	};
+#endif
+
 	int sz;
 	bool pverify_failed = false;
 
 	// Load initial loader (binary consisting of triplets).
-	if(!(pb = load(pb, file, &sz)))
-		return(-1);
+#if defined(HAS_COLDBOOT)
+	if(!coldloadfilename) {
+		pb = default_coldloader;
+		sz = sizeof(default_coldloader);
+	}
+	else
+#endif
+	if(!(pbfile = load(pb, coldloadfilename, &sz))) {
+		if (pbfile)
+			pb = pbfile;
+		else
+			return(-1);
+	}
 
 	if(sz % 3) {
-		fprintf(stderr, "Initial loader triplet binary %s size is not a multiple of 3.\n", file);
+		fprintf(stderr, "Initial loader triplet binary %s size is not a multiple of 3.\n", coldloadfilename);
 		return(-1);
 	}
 
@@ -328,7 +349,7 @@ int rabbit_coldload(int tty, const char *file) {
 	usleep(100000);
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 	pverify_failed += (s & TIOCM_DSR);
@@ -337,16 +358,17 @@ int rabbit_coldload(int tty, const char *file) {
 	usleep(100000);
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 	pverify_failed += !(s & TIOCM_DSR);
 	if(pverify_failed)
-		fprintf(stderr, "Warning: Processor verification sequence failed!\n");
+		fprintf(stderr, "Warning: Processor verification sequence failed (i.e. no Rabbit processor found)!\n");
+
 
 	// Tell Rabbit initial loader is comming.
 	if(rabbit_triplets(tty, coldload, sizeof(coldload) / 3)) {
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
@@ -354,28 +376,27 @@ int rabbit_coldload(int tty, const char *file) {
 	// Check status line.
 	if(ioctl(tty, TIOCMGET, &s) < 0) {
 		perror("ioctl(TIOCMGET)");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 	if(!(s & TIOCM_DSR)) {
 		fprintf(stderr, "Error: Status line should be low before sending initial loader.\n");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
 	// Send initial loader.
 	sz -= 3; // Skip 0x80, 0x24, 0x80 at end of initial loader.
 	if (verbose)
-		fprintf(stderr, "sending %d initial loader triplets\n", sz / 3);
+		fprintf(stderr, "Sending %d initial loader triplets.\n", sz / 3);
 	if(rabbit_triplets(tty, pb, sz / 3)) {
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
-	free(pb);
+	free(pbfile);
 
 	// Tell her we're done with initial loader.
 	if(rabbit_triplets(tty, colddone, sizeof(colddone) / 3)) {
-		free(pb);
 		return(-1);
 	}
 
@@ -393,8 +414,7 @@ int rabbit_coldload(int tty, const char *file) {
 	return(0);
 }
 
-int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
-	unsigned char *pb = NULL;
+int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 	uint16_t csumR, csumU;
 	uint8_t csum;
 	struct {
@@ -404,16 +424,35 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 	} pilot;
 	int sz, i;
 
+	unsigned char *pb;
+	unsigned char *pbfile = NULL;
+
+#if defined(HAS_COLDBOOT)
+	unsigned char default_pilot[] = {
+#embed "../coldboot/pilot.bin"
+	};
+#endif
+
 	// move baudrate up
 	if(tty_setbaud(tty, 57600))
 		return(-1);
 
-	// load pilot.bin
-	if((pb = load(pb, pfile, &sz)) == NULL)
-		return(-1);
+#if defined(HAS_COLDBOOT)
+	if(!pilotfilename) {
+		pb = default_pilot;
+		sz = sizeof(default_pilot);
+	}
+	else
+#endif
+	if(!(pbfile = load(pb, pilotfilename, &sz))) {
+		if (pbfile)
+			pb = pbfile;
+		else
+			return(-1);
+	}
 
 	*dc8pilot = sz > 0x6000;
-	for(int i = 0; i < 0x6000; i++)
+	for(int i = 0; i < sz; i++)
 		if (pb[i])
 			*dc8pilot = false;
 
@@ -429,21 +468,21 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 	for(pilot.csum = 0, i = 0; i < 6; i++) pilot.csum += ((uint8_t*)&pilot)[i];
 	if(dwrite(tty, &pilot, 7) < 7) {
 		perror("write(pilot) < sizeof(pilot)");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
 	// wait for checksum
 	if(dread(tty, &csum, sizeof(csum)) < (ssize_t)sizeof(csum)) {
 		perror("read(csum) < sizeof(csum)");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
 	// check csum
 	if(pilot.csum != csum) {
 		fprintf(stderr, "pilot.csum 0x%02x != csum 0x%02x\n", pilot.csum, csum);
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
@@ -452,24 +491,24 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 		fprintf(stderr, "sending %d secondary loader bytes.\n", pilot.sz);
 	if(dwrite(tty, pb + pilotoffset, pilot.sz) < pilot.sz) {
 		perror("write(pilot) < pilot.sz");
-		free(pb);
+		free(pbfile);
 		return(-1);
 	}
 
 	// calculate pilot checksum
 	csumU = rabbit_csum(0, pb + pilotoffset, pilot.sz);
 
+	free(pbfile);
+
 	// wait for checksum
 	if(dread(tty, &csumR, sizeof(csumR)) < (ssize_t)sizeof(csumR)) {
 		perror("read(csumR) < sizeof(csumR)");
-		free(pb);
 		return(-1);
 	}
 		
 	// check csum1,2
 	if(csumR != csumU) {
 		fprintf(stderr, "csumR 0x%04x != csumU 0x%04x\n", csumR, csumU);
-		free(pb);
 		return(-1);
 	}
 
@@ -478,7 +517,7 @@ int rabbit_pilot(int tty, const char *pfile, bool *dc8pilot) {
 	return(0);
 }
 
-int rabbit_upload(int tty, const char *project, bool dc8pilot) {
+int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot) {
 	unsigned char *pb = NULL;
 	unsigned char *wp = NULL;
 	_TCSystemInfoProbe info;
@@ -560,13 +599,13 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 		return(-1);
 
 	// load project.bin
-	bool ihex_format = fileext_is (project, ".ihx") || fileext_is (project, ".hex");
+	bool ihex_format = fileext_is (projectfilename, ".ihx") || fileext_is (projectfilename, ".hex");
 	if (ihex_format) {
 		if (verbose)
-			fprintf (stderr, "Due to its file extension, \"%s\" is considered to be in Intel hex format (of up to 256 KB size).\n", project);
-		FILE *f = fopen(project, "r");
+			fprintf (stderr, "Due to its file extension, \"%s\" is considered to be in Intel hex format (of up to 256 KB size).\n", projectfilename);
+		FILE *f = fopen(projectfilename, "r");
 		if (!f) {
-			fprintf (stderr, "Failed to open file %s.\n", project);
+			fprintf (stderr, "Failed to open file %s.\n", projectfilename);
 			return(-1);
 		}
 		pb = malloc(256 * 1024);
@@ -576,8 +615,10 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 			return(-1);
 	}
 	else {
-		if((pb = load(pb, project, &sz)) == NULL)
+		if((pb = load(pb, projectfilename, &sz)) == NULL) {
+			fprintf (stderr, "Failed to open file %s.\n", projectfilename);
 			return(-1);
+		}
 	}
 
 	// erase flash
@@ -593,7 +634,7 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 	// write project.bin
 	for(i = 0; i < sz; i += l) {
 		dtiming(&rs, &ws);
-		fprintf(stderr, "sending %s... %d%% (bps: in=%d, out=%d)                   \r", project, !i?0:(i*100/sz), rs, ws);
+		fprintf(stderr, "sending %s... %d%% (bps: in=%d, out=%d)                   \r", projectfilename, !i?0:(i*100/sz), rs, ws);
 		fflush(stderr);
 
 		// calculate length left
@@ -617,7 +658,7 @@ int rabbit_upload(int tty, const char *project, bool dc8pilot) {
 			return(-1);
 	}
 
-	fprintf(stderr, "sending %s... done\n", project);
+	fprintf(stderr, "sending %s... done\n", projectfilename);
 
 	return(0);
 }
@@ -667,21 +708,21 @@ char rabbit_debug(int tty) {
 	return(1);
 }
 #include <time.h>
-int rabbit_program(int tty, const char *coldload, const char *pilot, const char *project, bool *dc8pilot) {
+int rabbit_program(int tty, const char *coldloadfilename, const char *pilotfilename, const char *projectfilename, bool *dc8pilot) {
 	// reset her
 	if(rabbit_reset(tty))
 		return(-1);
 
 	// coldload her
-	if(rabbit_coldload(tty, coldload))
+	if(rabbit_coldload(tty, coldloadfilename))
 		return(-1);
 
 	// load pilot
-	if(rabbit_pilot(tty, pilot, dc8pilot))
+	if(rabbit_pilot(tty, pilotfilename, dc8pilot))
 		return(-1);
 
 	// load project
-	if(rabbit_upload(tty, project, *dc8pilot))
+	if(rabbit_upload(tty, projectfilename, *dc8pilot))
 		return(-1);
 
 	return(0);
@@ -702,5 +743,7 @@ int rabbit_start(int tty)
 
 	if(rabbit_triplets(tty, start, sizeof(start) / 3))
 		return(-1);
+
+	return(0);
 }
 
