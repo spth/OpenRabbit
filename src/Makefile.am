@@ -12,3 +12,6 @@ openrabbit_LDFLAGS = $(all_libraries)
 noinst_HEADERS = myio.h mytypes.h rabbit.h rabdata.h rabio.h rabmap.h mytypes.h bios/tc_defs.lib bios/dkcore.lib
 openrabbit_LDADD = -lncurses
 
+openrabbitfu: openrabbit
+	$(LN_S) openrabbit openrabbitfu
+

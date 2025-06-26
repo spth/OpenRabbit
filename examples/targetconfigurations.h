@@ -3,7 +3,8 @@
 // Flash / RAM speed (displayed by openrabbit when using --verbose)
 // µC Specification (see section on AC timing specification or memory access times in the respective Rabbit user manual)
 //
-// For some RCM, the 45 ns flash used intitially was replaced by 55 ns flash, causing a reliability issue on boards
+// TODO:
+// For some RCM, the 45 ns flash used initially was replaced by 55 ns flash, causing a reliability issue on boards
 // With a 29 MHz crystal when the clock doubler is used.
 // RCM3000 Rev F (and later)
 // RCM3010 Rev F (and later)
@@ -27,10 +28,17 @@
 #define MB0CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
 #define MB2CR_VALUE 0xc5   // RAM - 0 wait states
 
+#elif defined(RCM3110)     // RCM3110: 29.49 MHz
+#define SERIAL_DIVIDER_38400 24
+#define CLOCK_DOUBLER 0x07 // Clock doubler for 14.7456 MHz base
+#define MB0CR_VALUE 0xc8   // Flash 0 wait states with write-protection (for 45 ns Flash @ 29.49 MHz) with write-protection
+#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 29.49 MHz)
+
 #elif defined(RCM3209)     // RCM3209: 44.2 MHz
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
 #define MB0CR_VALUE 0x88   // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
+#define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
 
 #elif defined(RCM3319)     // RCM3319: 44.2 MHz
 #define SERIAL_DIVIDER_38400 36
@@ -53,8 +61,8 @@
 #elif defined(RCM5700)     // RCM5700: 50.00 MHz
 #define SERIAL_DIVIDER_38400 41
 #define CLOCK_DOUBLER 0x07 // Clock doubler for 25.000 MHz base
-#define MB0CR_VALUE 0x48   // Flash 2 wait states with write-protection (guess (my RCM5700 has 70ns flash), as we don't know values from id block yet)
-#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (guess, as we don't know values from id block yet)
+#define MB0CR_VALUE 0x08   // Flash - 4 wait states (3 would do for 70 ns Flash @ 50.00 MHz, but 3 is not a possible setting) with write-protection
+#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 15 ns RAM @ 50.00 MHz)
 
 #endif
 

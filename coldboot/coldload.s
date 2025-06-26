@@ -6,7 +6,8 @@
 ; file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ; This file is the source for coldload.bin. It has been translated from
-; Dynamic C syntax to sdasrab syntax by Philipp Klaus Krause in 2020.
+; Dynamic C 9 to sdasrab syntax by Philipp Klaus Krause in 2020, and
+; modified since.
 ; It can be assembled as follows:
 ; sdasrab -o coldload.s
 ; sdcc -mr2k --code-loc 0 --no-std-crt0 coldload.rel
@@ -15,20 +16,26 @@
 
 DIVADDR       .equ 0x3f00    ; time constant address
 REGBIOSFLAG   .equ 0x3f01    ; start bare BIOS flag address
-FREQADRS      .equ 0x3f02    ; frequency divisor address
-COLDLOADDEBUG .equ 0
+FREQADRS_DC9  .equ 0x3f02    ; frequency divisor address for Dynamic C 8/9 secondary loader Rabbit 2000 - 3000 (and to some degreee Rabbit 4000 and 5000)
+FREQADRS_DC10 .equ 0x0000    ; frequency divisor address for Dynamic C 10 secondary loader Rabbit 4000 - 6000
 
 RTC0R         .equ 0x02      ; Real Time Clock Byte 0 Register
 WDTCR         .equ 0x08      ; Watchdog Timer Control Register
 WDTTR         .equ 0x09      ; Watchdog Timer Test Register
 DATASEG       .equ 0x12      ; MMU Bank Base Register
 SEGSIZE       .equ 0x13      ; MMU Common Bank Area Register
+GCPU          .equ 0x2e      ; Global CPU Configuration Register
+GREV          .equ 0x2f      ; Global Revision Register
 PCFR          .equ 0x55      ; Port C Function Register
 TACSR         .equ 0xa0      ; Timer A Control/Status Register
+TAT1R         .equ 0xa3      ; Timer A Time Constant 1 Register
+TACR          .equ 0xa4      ; Timer A Control Register
 TAT4R         .equ 0xa9      ; Timer A Time Constant 4 Register
 SADR          .equ 0xc0      ; Serial Port A Data Register
 SASR          .equ 0xc3      ; Serial Port A Status Register
 SACR          .equ 0xc4      ; Serial Port A Control Register
+SADLR         .equ 0xc6      ; Serial Port A Divider Low Register
+SADHR         .equ 0xc7      ; Serial Port A Divider High Register
 
 .area _CODE
 
@@ -59,12 +66,15 @@ timing_loop:
 	push	bc                           ; save counter
 	ld	hl, #WDTCR
 
-; Dynamic C 9-style delay loop - works for Rabbit 2000 to Rabbit 4000
-	ld	b, #0x98                     ; empirical loop value (timed for 2 wait states)
+; Modified C 9-style delay loop - works for Rabbit 2000 to Rabbit 4000,
+; and (unlike the original Dynamic C 9 one) also for Rabbit 5000 and Rabbit 6000.
+; we use dec and jp instead of djnz (or jr), since the the timing of djnz and jr differs on Rabbit 2000/3000/4000 vs. 5000/6000.
+	ld	b, #0x73                     ; loop value (timed for 2 wait states)
 delay_loop:
 	ioi
 	ld	(hl), #0x5a                  ; hit watchdog
-	djnz	delay_loop                   ; timing of djnz differs on Rabbit 2000/3000/4000 vs. 5000/6000. Could be a problem for Rabbit 5000/6000.
+	dec	b
+	jp	nz, delay_loop
 
 	pop	bc                           ; restore counter
 	ioi
@@ -75,7 +85,7 @@ delay_loop:
 	jr	z, timing_loop               ; repeat until bit set
 
 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-; !!!!!Time critical code for crystal frequency detection ends	!
+; !!!!!Time critical code for crystal frequency detection ends !
 ; !!!!!here!                                                   !
 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -88,24 +98,26 @@ delay_loop:
 	rr	hl
 	rr	hl
 	rr	hl                           ; divide by 16
-	ld	a, l                         ; this is our divider!
+	dec	hl                           ; Minus one, since both timer A4-based (Rabbit 2000-3000) and direct (Rabbit 4000-6000) use a divider one higher than the respective register value.
 
-	dec	a
+	ld	a, l                         ; this is our divider!
 	ioi
 	ld	(TAT4R), a                   ; set timer A4 running at 57600 baud
-	inc	a
 
+	inc	a
 	ld	b, a
 	sla	a
 	add	a, b                         ; multiply by 3 to get 19200 baud
 
-	ld	(FREQADRS), a                ; save divisor for later
+	ld	(FREQADRS_DC9), a            ; save divisor for later
 	dec	a
 
 	ld	(DIVADDR), a                 ; save 19200 baud scaling
 	ld	a, #0x01
 	ioi
 	ld	(TACSR), a                   ; enable timer A with cpuclk/2
+
+
 	xor	a, a
 	ioi
 	ld	(SACR), a                    ; set serial port A async, 8 bit, port C input
@@ -141,6 +153,8 @@ delay_loop:
 	altd
 	ld	a, a                         ; store received checksum in a'
 
+	push	hl                           ; save pilot BIOS's size
+
 	ld	a, e                         ; initialize and calculate local checksum . . .
 	add	a, d
 	add	a, c
@@ -154,9 +168,18 @@ delay_loop:
 	ld	b, a
 	ex	af, af'                      ; get received checksum
 	cp	a, b                         ; compare checksums
-	jp	nz, timeout                  ; if checksums do not match error out
+timeout:
+	jr	nz, timeout                  ; if checksums do not match error out
 	exx
-	push	hl                           ; save pilot BIOS's size
+
+	; Send CPU information.
+	ioi
+	ld a, (GREV)
+	call _send_byte
+	ioi
+	ld a, (GCPU)
+	call _send_byte
+
 	ld	h, c                         ; copy pilot BIOS's begin physical address middle
 	ld	l, d                         ;  bytes into HL
 	rr	hl                           ; shift physical address bits 19:12 into L
@@ -179,53 +202,53 @@ delay_loop:
 
 	ld	a, l
 
-	pop	de                           ; recover the pilot BIOS's size into DE
+	pop	bc                           ; recover the pilot BIOS's size into DE
 	ld	iy, hl                       ; save pilot's logical begin in IY for copy-to-RAM index
 	ld	ix, hl                       ;  and in IX for the jump to the pilot BIOS
 
-_wait_for_CC:
-	call	_get_byte
-	nop
-	cp	a, #0xcc                     ; initial pilot BIOS code (flag) byte?
-	jr      nz, _wait_for_CC
-	xor	a, a
-	ld	(iy), a                      ; replace the 0xCC marker with 0x00 (nop)
-	inc	iy                           ; increment the copy-to-RAM index
-	dec	de                           ; one less byte to copy
-	ld	bc, #0xcccc                  ; update the (initially 0x0000) 8-bit Fletcher
-		                             ;  checksum value with the 0xCC just received
+;_wait_for_CC:
+;	call	_get_byte
+;	nop
+;	cp	a, #0xcc                     ; initial pilot BIOS code (flag) byte?
+;	jr      nz, _wait_for_CC
+
+;	xor	a, a
+;	ld	(iy), a                      ; replace the 0xCC marker with 0x00 (nop)
+;	inc	iy                           ; increment the copy-to-RAM index
+;	dec	de                           ; one less byte to copy
+;	ld	bc, #0xcccc                  ; update the (initially 0x0000) 8-bit Fletcher
+		                             ; checksum value with the 0xcc just received
+	ld	de, #0x0000
 
 _load_pilot_loop:
 	call	_get_byte
-	nop
+;	nop
 	ld	(iy), a
 
 	; Use 8-bit Fletcher checksum algorithm.  See RFC1145 for more info.
-	add	a, b
+	add	a, d
 	adc	a, #0x00
-	ld	b,a                          ; A = A + D[i]
-	add	a, c
+	ld	d, a                         ; A = A + D[i]
+	add	a, e
 	adc	a, #0x00
-	ld	c,a                          ; B = B + A
+	ld	e, a                         ; B = B + A
 
 	inc	iy                           ; increment the copy-to-RAM index
-	dec	de                           ; one less byte to copy
-	bool	hl
-	ld	l, h                         ; zero hl
-	or	hl, de                       ; check remaining size of pilot
+	dec	bc                           ; one less byte to copy
+	ld	a, c
+	or	a, b                         ; check remaining size of pilot
 	jr	nz, _load_pilot_loop         ; repeat until size bytes are received
 
-	ld	a, c                         ; send LSB of pilot BIOS's Fletcher checksum
+	ld	a, e                         ; send LSB of pilot BIOS's Fletcher checksum
 	call	_send_byte
 	nop
-	ld	a, b                         ; send MSB of pilot BIOS's Fletcher checksum
+	ld	a, d                         ; send MSB of pilot BIOS's Fletcher checksum
 	call	_send_byte
 	nop
-
-;ioi	ld	(WDTTR), a                   ; reenable the watchdog timer
 
 	jp	(ix)                         ; start running pilot bios
 
+; get_byte - reads byte from serial line, returns it in a. Doesn not overwrite any other registers.
 _get_byte::
 pollrxbuf:
 	ioi
@@ -236,10 +259,8 @@ pollrxbuf:
 	ld	a, (SADR)                    ; get byte
 	ret
 
-; Must not destroy register A!!
-; destroys hl'
+; send_byte - sends byte via serial line. Byte to be send in a. Overwrites hl, but no other registers.
 _send_byte::
-	exx
 polltxbuf:
 	ld	hl, #SASR
 	ioi
@@ -247,33 +268,7 @@ polltxbuf:
 	jr	nz, polltxbuf                ; wait for serial port A not bus
 	ioi
 	ld	(SADR), a                    ; send byte
-	exx
 	ret
 
-timeout::
-	ld	e, #0x55
-	jr	timeout
 coldloadend::
-
-;#if COLDLOADDEBUG
-;ledchg::
-;	push	hl
-;	push	af
-;	ld	a, #0x84
-;	ioi
-;	ld	(SPCR), a
-;	ld	hl, WDTCR
-;	ioi
-;	ld	(hl), #0x5a			; hit watchdog
-;	pop	af
-;	ioi
-;	ld	(PADR), a
-;	pop	hl
-;	ret
-;justloop::
-;	ld	a, #0x5a
-;	ioi
-;	ld	(WDTCR), a			; hit watchdog
-;	jr	justloop
-;#endif
 

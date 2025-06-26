@@ -443,14 +443,18 @@ rabbit_brk_load_abort:
 }
 
 void usage(FILE *stream) {
-	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin|project.ihx> <cable device>\n");
-	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin> <project.brk> <drive> <mount> <cable device>\n");
+	fprintf(stream, "Usage: openrabbitfu [--help] [--verbose] [--slow] [--run] [--serialout] [--ramcs <i>] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin|project.ihx> <cable device>\n");
+	fprintf(stream, "Usage: openrabbit [--help] [--verbose] [--slow] [--ramcs <i>] [--coldload <coldload.bin>] [--pilot <pilot.bin>] <project.bin> <project.brk> <drive> <mount> <cable device>\n");
 	fprintf(stream, "\nOptions:\n");
-	fprintf(stream, "--help        - Display this help.\n");
-	fprintf(stream, "--verbose     - Be more verbose. Can be used up to 3 times to increase verbosity.\n");
-	fprintf(stream, "--slow        - Use workaround for tcdrain() driver bugs - can make some USB-to-serial converters work.\n");
-	fprintf(stream, "--run         - Run program immediately after programming.\n");
-	fprintf(stream, "--serialout   - Display data from serial line at 38400 baud until EOT.\n");
+	fprintf(stream, "--help              - Display this help.\n");
+	fprintf(stream, "--verbose           - Be more verbose. Can be used up to 3 times to increase verbosity.\n");
+	fprintf(stream, "--slow              - Use workaround for tcdrain() driver bugs - can make some USB-to-serial converters work.\n");
+	fprintf(stream, "--run               - Run program immediately after programming.\n");
+	fprintf(stream, "--serialout         - Display data from serial line at 38400 baud until EOT.\n");
+	fprintf(stream, "--ramcr <i>         - Configure RAM as i instead of default 0x45 (/OE1, /CS1, 2 wait states).\n");
+	fprintf(stream, "--coldload <cl.bin> - Use provided cl.bin instead of built-in primary loader.\n");
+	fprintf(stream, "--pilot <pilot.bin> - Use provided pilot.bin instead of built-in secondary loader.\n");
+	fprintf(stream, "--run               - Run program immediately after programming.\n");
 }
 
 int main(int argc, char **argv) {
@@ -468,10 +472,10 @@ int main(int argc, char **argv) {
 	char arg;
 	int key;
 	int tty;
-	int i,c;
 	bool dc8pilot;
 	bool run = false;
 	bool serialout = false;
+	int ramcr = 0x45; // Change default to -1, once we support autodetection.
 	const char *coldloadfilename = NULL;
 	const char *pilotfilename = NULL;
 
@@ -490,6 +494,15 @@ int main(int argc, char **argv) {
 		}
 		else if (!strcmp(argv[1], "--verbose")) {
 			verbose++;
+		}
+		else if (!strcmp(argv[1], "--ramcr")) {
+			if (argc <= 2) {
+				usage(stderr);
+				return(-1);
+			}
+			ramcr = strtol (argv[2], 0, 0);
+			memmove(argv + 1, argv + 2, sizeof(char *) * (argc - 2));
+			argc--;
 		}
 		else if (!strcmp(argv[1], "--coldload")) {
 			if (argc <= 2) {
@@ -543,7 +556,7 @@ int main(int argc, char **argv) {
 	}
 
 	// make connection
-	if((tty = rabbit_open(argv[rfu? 4 : 7])) < 0)
+	if((tty = rabbit_open(argv[rfu? 2 : 5])) < 0)
 		return(2);
 
 	if(!rfu) {
@@ -556,7 +569,7 @@ int main(int argc, char **argv) {
 	}
 
 	// program the damn thing
-	if(rabbit_program(tty, coldloadfilename, pilotfilename, argv[1], &dc8pilot)) {
+	if(rabbit_program(tty, ramcr, coldloadfilename, pilotfilename, argv[1], &dc8pilot)) {
 		close(tty);
 		return(3);
 	}
@@ -568,7 +581,24 @@ int main(int argc, char **argv) {
 
 		// Show data received on serial line
 	        if(serialout) {
+			// Wait for STATUS high, then set serial speed. User program has to signal that it is ready via setting STATUS high.
+			// A more elegant solution would be to have rabbit_start set 2400 for sending, and 38400 already for receiving.
+			// (we'd need to set the receiving rate there already, since we can't do it reliably after starting the program -
+			// we'd need to wait a bit to not mess up sent triplets still in the buffer, but waiting too long means that we loose data from the user program.
+			// There is no magic wait time that works for all USB-serial-converter / driver / OS combinations). But Linux does not support separate input / output baud rates.
+			{
+				int s;
+				do {
+					if(ioctl(tty, TIOCMGET, &s) < 0) {
+						perror("ioctl(TIOCMGET)");
+						return(-1);
+					}
+					usleep (10);
+				}
+				while (s & TIOCM_DSR);
+			}
 			tty_setbaud(tty, 38400);
+
 			char c;
 			do {
 				if(read (tty, &c, 1) < 1)
@@ -599,7 +629,7 @@ int main(int argc, char **argv) {
 	if(!rabbit_write(tty, TC_TYPE_DEBUG, TC_DEBUG_STOPPROGRAM, 0, NULL))
 		goto main_abort;
 
-	for(c = 0, stop = 0; !stop;) {
+	for(int c = 0, stop = 0; !stop;) {
 		// update bps	FIXME: find a good place for this :)
 		if(0) {
 			move(0, 60);
@@ -613,7 +643,7 @@ int main(int argc, char **argv) {
 		FD_SET(tty, &readfs);
 		timeout.tv_sec = 1;
 		timeout.tv_usec = 0;
-		i = select(tty+1, &readfs, NULL, NULL, &timeout);
+		int i = select(tty+1, &readfs, NULL, NULL, &timeout);
 
 		// nothing found?
 		if(!i) {

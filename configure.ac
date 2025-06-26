@@ -11,6 +11,7 @@ AM_CONDITIONAL(ENABLE_COLDBOOT, test x"$enable_coldboot" = xyes)
 AC_LANG([C])
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_LN_S
 LT_INIT
 
 AC_CHECK_PROG(SDCC,sdcc,sdcc, :)

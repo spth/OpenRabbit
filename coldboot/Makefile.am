@@ -2,7 +2,7 @@ data_DATA = coldload.bin
 dist_data_DATA = pilot.bin
 noinst_PROGRAMS = makecold
 
-makecold_SOURCES = makecold.cpp
+makecold_SOURCES = makecold.c
 
 EXTRA_DIST = coldload.s
 

@@ -1,35 +1,11 @@
-// "Hello, world!" on serial port A @ 19200 baud.
+// "Hello, world!" on serial port A @ 38400 baud.
 
 #include <stdint.h>
 #include <stdio.h>
 
 #include "r2k.h"
 
-#if defined(RCM2020)
-#define SERIAL_DIVIDER_19200 15
-
-#elif defined(RCM2200)
-#define SERIAL_DIVIDER_19200 18
-
-#elif defined(RCM3110)
-#define SERIAL_DIVIDER_19200 24
-
-#elif defined(RCM3209)
-#define SERIAL_DIVIDER_19200 36
-
-#elif defined(RCM3319)
-#define SERIAL_DIVIDER_19200 36
-
-#elif defined(RCM3750)
-#define SERIAL_DIVIDER_19200 18
-
-#elif defined(RCM4110)
-#define SERIAL_DIVIDER_19200 48 // 29.5 MHz crystal, thus clock running at full speed despite clock doubler off on startup.
-
-#elif defined(RCM5700)
-#define SERIAL_DIVIDER_19200 41
-
-#endif
+#include "targetconfigurations.h"
 
 // ___sdcc_external_startup, if present, will be called very early, before initalization
 // of global objects. This makes it e.g. useful for dealing with watchdogs that might
@@ -47,6 +23,12 @@ unsigned char _sdcc_external_startup(void)
 	// normal oscillator, processor and peripheral from main clock, no periodic interrupt
 	GCSR = 0x08;
 
+	GCDR = CLOCK_DOUBLER; // If possible, double clock to get more speed
+
+	// Configure memory wait states
+	MB0CR = MB0CR_VALUE;
+	MB2CR = MB2CR_VALUE;
+
 	return 0;
 }
 
@@ -62,11 +44,30 @@ int putchar(int c)
 	return c;
 }
 
+unsigned long clock(void) // Get value of 32768 Hz real-time clock.
+{
+	unsigned long clock0, clock1;
+	do
+	{
+		RTC0R = 0;
+		clock0 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
+		clock1 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
+	} while (clock0 != clock1);
+	return(clock1);
+}
+
 void main(void)
 {
+	GOCR = 0x30;	// STATUS/DTR high signals to OpenRabbit that user program is running and will send data.
+	// Give OpenRabbit and host some time (100 ms) to reconfigure baud rate
+	{
+		unsigned long c = clock();
+		while (clock() - c < 32 * 100);
+	}
+
 	PCFR = 0x40;	// Use pin PC6 as TXA
 
-	TAT4R = SERIAL_DIVIDER_19200 - 1;	// Value in register is one less than the divider used (e.g. a value of 0 will result in clock division by 1).
+	TAT4R = SERIAL_DIVIDER_38400 - 1;	// Value in register is one less than the divider used (e.g. a value of 0 will result in clock division by 1).
 	TACSR = 0x01;	// Enable timer A
 
 	SACR = 0x00;	// No interrupts, 8-bit async mode

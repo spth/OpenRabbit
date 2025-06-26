@@ -32,14 +32,14 @@ int rabbit_open(const char *device);
 char rabbit_write(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
 int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data);
 int rabbit_read(int tty, uint8_t type, uint8_t subtype, uint16_t length, void *data);
-int rabbit_coldload(int tty, const char *coldloadfile);
+int rabbit_coldload(int tty, int ramcr, const char *coldloadfile);
 int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot);
 int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot);
 char rabbit_boot(int tty, const char *coldloadfilename, const char *pilotfilename, const char *projectfilename);
 char rabbit_debug(int tty);
 
 // Load program into Rabbit. Use tty for serial device, coldload for initial loader filename, pilot for secondary loader filename, project for user program filename, dc8pilot indicates that the secondary loader is Dynamic C 8-style instead of Dynamic C 9.
-int rabbit_program(int tty, const char *coldload, const char *pilot, const char *projectfilename, bool *dc8pilot);
+int rabbit_program(int tty, int ramcr, const char *coldload, const char *pilot, const char *projectfilename, bool *dc8pilot);
 
 // Start program in flash.
 int rabbit_start(int tty);

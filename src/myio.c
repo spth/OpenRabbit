@@ -1,7 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lourens Rozema                                  *
  *   ik@lourensrozema.nl                                                   *
- *   Copyright (C) 2020 by Philipp Klaus Krause                            * 
+ *   Copyright (C) 2020-2025 by Philipp Klaus Krause                       * 
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -157,29 +157,29 @@ load_ret:
 
 int tty_setbaud(int tty, unsigned long baud) {
 	struct termios newtio;
-	int b;
+	speed_t b;
 
-	// convert baudrate
+	// convert baudrates
 	switch(baud) {
-	case 2400:
+	case 2400:  // POSIX rate
 		b = B2400;
 		break;
-	case 19200:
+	case 19200: // POSIX rate
 		b = B19200;
 		break;
-	case 38400:
+	case 38400: // POSIX rate
 		b = B38400;
 		break;
-	case 57600:
+	case 57600: // Linux rate
 		b = B57600;
 		break;
-	case 115200:
+	case 115200:// Linux / FreeBSD rate
 		b = B115200;
 		break;
-	case 230400:
+	case 230400:// Linux / FreeBSD rate
 		b = B230400;
 		break;
-	case 460800:
+	case 460800:// Linux rate
 		b = B460800;
 		break;
 	default:
@@ -188,19 +188,29 @@ int tty_setbaud(int tty, unsigned long baud) {
 	}
   
 	// setup port
-	newtio.c_cflag = b | CS8 | CLOCAL | CREAD | CSTOPB;
+	newtio.c_cflag = CS8 | CLOCAL | CREAD | CSTOPB;
 	newtio.c_iflag = IGNPAR;
 	newtio.c_oflag = 0;
 	newtio.c_lflag = 0;
 	newtio.c_cc[VMIN] = 1;
 	newtio.c_cc[VTIME] = 0;
+	if (cfsetispeed(&newtio, b) || cfsetospeed(&newtio, b)) { // POSIX has separate input / output baud rates, but Linux doesn't support that.
+		fprintf(stderr, "failed to set baud in setbaud(), left unmodified!\n");
+		return(-1);
+	}
+
+	// Even for USB-to-serial converters, where TCSAFLUSH mostly works, there can be issues, where e.g. a baud range change affects not-yet-sent data in buffers, even though a tcdrain() (or tcsetattr with TCSAFLUSH) before the baud rate change returned.
+	// Try to mitigate by always waiting a bit before baud rate change.
+	usleep(20000);
 
 	if(verbose > 2)
 		fprintf(stderr, "flushing data for baudrate set\n");
 
 	// change settings
-	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0)
+	if(tcsetattr(tty, TCSAFLUSH, &newtio) < 0) {
+		fprintf(stderr, "failed to set baudrate\n");
 		return(-1);
+	}
 
 	if(verbose > 1)
 		fprintf(stderr, "set baudrate to %lu\n", baud);

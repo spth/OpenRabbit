@@ -30,6 +30,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <poll.h>
 #include <string.h>
 
 #define WP_DATA_ORG 0x80000L
@@ -76,9 +77,13 @@ int rabbit_reset(int tty) {
 		perror("ioctl(TIOCMSET) low");
 		return(-1);
 	}
-  
-	// give her time
-	usleep(250000);
+
+	// Flush any pending data to discard garbage (Rabbit serial pin goes low on reset, which looks like a start condition to the host).
+	tcflush(tty, TCIOFLUSH);
+
+	// Give her time - 250000 works for nearly all Rabbits, but not for the RCM2200. So make it 300000, which apparently works everywhere.
+	// Measurements on an the RCM2200 indicate that it takes 258 ms for the Rabbit 2000C from the rising edge of /RESET until it can accept triplets.
+	usleep(300000);
 
 	return(0);
 }
@@ -201,7 +206,7 @@ int rabbit_poll(int tty, _TC_PacketHeader *tcph, uint16_t length, void *data) {
 	csum = rabbit_csum(csum, (uint8_t *) &tcph->header_checksum, sizeof(tcph->header_checksum));
 
 	// check for data frame
-	if(tcph->length > 0) {
+	if(tcph->length > 0) {printf("reading data frame\n");fflush(stdout);
 		// get memory
 		b = malloc(tcph->length);
 
@@ -298,14 +303,21 @@ int rabbit_triplets(int tty, const unsigned char *triplets, int n) {
 	return(0);
 }
 
-int rabbit_coldload(int tty, const char *coldloadfilename) {
+int rabbit_ramcrdetect(int tty, int *rammb0cr)
+{
+	fprintf(stderr, "RAM /CS detection not yet implemented.\n");
+	return(-1);
+}
+
+int rabbit_coldload(int tty, int ramcr, const char *coldloadfilename) {
 	int s;
 	const unsigned char pverify[12] =  { 0x80, 0x09, 0x51, 0x80, 0x09, 0x54, 0x80, 0x0e, 0x30, 0x80, 0x0e, 0x20};
 	const unsigned char coldload[6] =  { 0x80, 0x50, 0x40, 0x80, 0x0e, 0x20 }; // Set some value at parallel port C (why? Dynamic C 9, but not Dynamic C 10 does this), then set status pin low.
 	const unsigned char colddone[6] =  { 0x80, 0x0e, 0x30, 0x80, 0x24, 0x80 }; // Set status pin high, then exit program fetch mode.
-	const unsigned char enablecs3[3] = { 0x80, 0x14, 0x43};                    // Set MB0CR for internal RAM
+	unsigned char mb0cr[3] = { 0x80, 0x14, 0x45};                              // Set MB0CR for internal RAM at /OE1, /CS1, two wait states.
+	unsigned char mb1cr[3] = { 0x80, 0x15, 0x45};                              // Set MB1CR for internal RAM at /OE1, /CS1, two wait states.
 
-	unsigned char *pb;
+	unsigned char *pb = NULL;
 	unsigned char *pbfile = NULL;
 
 #if defined(HAS_COLDBOOT)
@@ -325,11 +337,10 @@ int rabbit_coldload(int tty, const char *coldloadfilename) {
 	}
 	else
 #endif
-	if(!(pbfile = load(pb, coldloadfilename, &sz))) {
-		if (pbfile)
-			pb = pbfile;
-		else
+	{
+		if(!(pbfile = load(pb, coldloadfilename, &sz)))
 			return(-1);
+		pb = pbfile;
 	}
 
 	if(sz % 3) {
@@ -365,8 +376,15 @@ int rabbit_coldload(int tty, const char *coldloadfilename) {
 	if(pverify_failed)
 		fprintf(stderr, "Warning: Processor verification sequence failed (i.e. no Rabbit processor found)!\n");
 
+	// Configure RAM
+	mb0cr[2] = ramcr;
+	mb1cr[2] = ramcr;
+	if(rabbit_triplets(tty, mb0cr, sizeof(mb0cr) / 3) || rabbit_triplets(tty, mb1cr, sizeof(mb1cr) / 3)) {
+		free(pbfile);
+		return(-1);
+	}
 
-	// Tell Rabbit initial loader is comming.
+	// Tell Rabbit initial loader is coming.
 	if(rabbit_triplets(tty, coldload, sizeof(coldload) / 3)) {
 		free(pbfile);
 		return(-1);
@@ -406,7 +424,7 @@ int rabbit_coldload(int tty, const char *coldloadfilename) {
 		perror("ioctl(TIOCMGET)");
 		return(-1);
 	}
-	if(s & TIOCM_DSR ) {
+	if(s & TIOCM_DSR) {
 		fprintf(stderr, "Error: Status line should be high after sending initial loader.\n");
 		return(-1);
 	}
@@ -424,7 +442,7 @@ int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 	} pilot;
 	int sz, i;
 
-	unsigned char *pb;
+	unsigned char *pb = NULL;
 	unsigned char *pbfile = NULL;
 
 #if defined(HAS_COLDBOOT)
@@ -444,11 +462,10 @@ int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 	}
 	else
 #endif
-	if(!(pbfile = load(pb, pilotfilename, &sz))) {
-		if (pbfile)
-			pb = pbfile;
-		else
+	{
+		if(!(pbfile = load(pb, pilotfilename, &sz)))
 			return(-1);
+		pb = pbfile;
 	}
 
 	*dc8pilot = sz > 0x6000;
@@ -459,8 +476,6 @@ int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 	int pilotoffset = *dc8pilot ? 0x6000 : 0;
 
 	fprintf(stderr, "Secondary loader format detected as %s\n", *dc8pilot ? "Dynamic C 8" : "Dynamic C 9");
-
-	fprintf(stderr, "Sending secondary loader.\n");
 
 	// tell her pilot.bin is comming
 	pilot.off = 0x4000L;
@@ -486,6 +501,24 @@ int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 		return(-1);
 	}
 
+	
+        //Try to receive CPU information. Dynamic C 8/9 and OpenRabbit up to 0.2.4 coldload doesn't send this.
+	{
+		struct pollfd polltty;
+		polltty.fd = tty;
+		polltty.events = POLLIN;
+		poll (&polltty, 1, 10); // Wait 10 ms to see if any data arrives
+		if (polltty.revents == POLLIN) { // We got something. This is our cold loader, not a Dynamic C 8/9 one!
+			unsigned char gcpugrev[2];
+			dread(tty, gcpugrev, 2);
+			unsigned int cpuid = ((gcpugrev[1] & 0x1f) << 8) + (gcpugrev[0] & 0x1f);
+			if (verbose)
+				fprintf(stderr, "CPU: 0x%04x (%s)\n", cpuid, rabbit_cpuname(cpuid));
+		}
+	}
+
+	fprintf(stderr, "Sending secondary loader.\n");
+
 	// send pilot
 	if(verbose)
 		fprintf(stderr, "sending %d secondary loader bytes.\n", pilot.sz);
@@ -499,13 +532,13 @@ int rabbit_pilot(int tty, const char *pilotfilename, bool *dc8pilot) {
 	csumU = rabbit_csum(0, pb + pilotoffset, pilot.sz);
 
 	free(pbfile);
-
+//fprintf(stderr, "C1\n");
 	// wait for checksum
 	if(dread(tty, &csumR, sizeof(csumR)) < (ssize_t)sizeof(csumR)) {
 		perror("read(csumR) < sizeof(csumR)");
 		return(-1);
 	}
-		
+//fprintf(stderr, "C2\n");
 	// check csum1,2
 	if(csumR != csumU) {
 		fprintf(stderr, "csumR 0x%04x != csumU 0x%04x\n", csumR, csumU);
@@ -598,7 +631,7 @@ int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot) {
 	if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_FLASHDATA, 0, NULL))
 		return(-1);
 
-	// load project.bin
+	// load user program
 	bool ihex_format = fileext_is (projectfilename, ".ihx") || fileext_is (projectfilename, ".hex");
 	if (ihex_format) {
 		if (verbose)
@@ -621,6 +654,9 @@ int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot) {
 		}
 	}
 
+        if (verbose > 2)
+        	fprintf(stderr, "Erasing Flash.\n");
+
 	// erase flash
 	flash = WP_DATA_SIZE+sz;
 	if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_ERASEFLASH, sizeof(flash), &flash))
@@ -629,9 +665,9 @@ int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot) {
 		return(-1);
 
 	// allocate memory
-	wp = malloc(TC_SYSTEM_WRITE_HEADERSIZE+WP_DATA_SIZE);
-
-	// write project.bin
+	wp = malloc(TC_SYSTEM_WRITE_HEADERSIZE+WP_DATA_SIZE+64*1024);
+			
+	// write user program
 	for(i = 0; i < sz; i += l) {
 		dtiming(&rs, &ws);
 		fprintf(stderr, "sending %s... %d%% (bps: in=%d, out=%d)                   \r", projectfilename, !i?0:(i*100/sz), rs, ws);
@@ -650,12 +686,32 @@ int rabbit_upload(int tty, const char *projectfilename, bool dc8pilot) {
 
 		// store data
 		memcpy(wp+TC_SYSTEM_WRITE_HEADERSIZE, pb+i, l);
-
+#if 0
+for(int i = 0; i < l; i++) printf("%02x ", (unsigned)(pb[i])); printf("\n");
+#endif
 		// write packet
 		if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, TC_SYSTEM_WRITE_HEADERSIZE+l, wp))
 			return(-1);
-		if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, 0, NULL))
+		if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_WRITE, 0, NULL)) {
+			fprintf (stderr, "\nFlash write failed.\n");
+#if 0
+{printf("At 0x%04x: ", WP_DATA_ORG + i);
+for(i = 0; i < 4096; i++) // 128 * 4096 = 512K
+{
+((_TCSystemREAD*)wp)->type = TC_SYSREAD_PHYSICAL;
+((_TCSystemREAD*)wp)->length = 128;
+((_TCSystemREAD*)wp)->address.physical = WP_DATA_ORG + i * 128;
+memmove(wp+1, wp+2, 6);
+if(!rabbit_write(tty, TC_TYPE_SYSTEM, TC_SYSTEM_READ, TC_SYSTEM_READ_HEADERSIZE, wp))
 			return(-1);
+if(rabbit_read(tty, TC_TYPE_SYSTEM, TC_SYSTEM_READ, TC_SYSTEM_READ_HEADERSIZE + 128, wp))
+			fprintf (stderr, "\nread failed.\n");
+for(int i = 0; i < TC_SYSTEM_READ_HEADERSIZE + 128; i++) printf("%02x ", (unsigned)(wp[i])); printf("\n");
+}
+}
+#endif	
+			return(-1);
+		}
 	}
 
 	fprintf(stderr, "sending %s... done\n", projectfilename);
@@ -708,13 +764,16 @@ char rabbit_debug(int tty) {
 	return(1);
 }
 #include <time.h>
-int rabbit_program(int tty, const char *coldloadfilename, const char *pilotfilename, const char *projectfilename, bool *dc8pilot) {
+int rabbit_program(int tty, int ramcr, const char *coldloadfilename, const char *pilotfilename, const char *projectfilename, bool *dc8pilot) {
 	// reset her
 	if(rabbit_reset(tty))
 		return(-1);
 
+	if(ramcr < 0 && rabbit_ramcrdetect(tty, &ramcr))
+		return(-1);
+
 	// coldload her
-	if(rabbit_coldload(tty, coldloadfilename))
+	if(rabbit_coldload(tty, ramcr, coldloadfilename))
 		return(-1);
 
 	// load pilot
@@ -730,16 +789,14 @@ int rabbit_program(int tty, const char *coldloadfilename, const char *pilotfilen
 
 int rabbit_start(int tty)
 {
-	const unsigned char start[3] = { 0x80, 0x24, 0x80};
+	const unsigned char start[9] = { 0x80, 0x0e, 0x20, 0x80, 0x50, 0x40, 0x80, 0x24, 0x80}; // Set STATUS low (to signal to OpenRabbit that user program is not yet ready), TXA high (so the program can easily create a good start condition), then start program.
 
-	// Set baudrate back to 2400
+	// Set baudrate back to 2400.
 	if(tty_setbaud(tty, 2400))
 		return(-1);
 
 	if(rabbit_reset(tty))
 		return(-1);
-
-	usleep(250000); // Hack: the number 250000 here is just a guess. Without the usleep, we often hang, with usleep (50000) sometimes.
 
 	if(rabbit_triplets(tty, start, sizeof(start) / 3))
 		return(-1);

@@ -10,7 +10,7 @@ Uploading via Openrabbit is a multi-stage process (similar to Dynamic C)
 The files in this directory are derived from Dynamic C 9.62 (https://github.com/digidotcom/DCRabbit_9) and covered by the Mozilla Public License Version 2.0.
 
 * makecold: Utility to convert binary to triplet form
-* makecold.cpp: Source for above
+* makecold.c: Source for above
 * coldboot.bin: initial loader
 * coldboot.s: Source for above
 * pilot.bin: Secondary loader
