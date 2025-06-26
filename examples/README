@@ -6,6 +6,7 @@ whetstone - Whetstone benchmark: setup for good performance, serial output (3840
 
 Invoking make in the respective directory will build the example for a number of target platforms:
 
+RCM2000 - Rabbit 2000@25.8 MHz
 RCM2020 - Rabbit 2000@18.4 MHz
 RCM2200 - Rabbit 2000@22.1 MHz
 RCM3110 - Rabbit 3000@29.4 MHz
