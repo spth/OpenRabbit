@@ -1,4 +1,4 @@
-2025-xx-xx	v0.2.5
+2025-09-12	v0.2.5
 Provide built-in default coldboot loaders (requires ISO C23 host compiler). Refactor makecold.c to ISO C99/23. Make "Hello, world!" examples use 38400 baud. Fix sporadic hang with --run. Fix sporadic output corruption with --serialout. Add --ramcr option for different RAM types. Fix out-of-tree build. Early CPU identification via primary loader.
 
 2024-12-20	v0.2.4
