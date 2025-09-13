@@ -3,7 +3,7 @@ SDCCFLAGS = -mr2k -I.. --data-loc 0xa000
 
 TARGETS = RCM2000 RCM2020 RCM2200 RCM3110 RCM3209 RCM3319 RCM3750 RCM4110 RCM5700
 
-HELLO = $(foreach target, $(TARGETS), hello-$(target).bin)
+HELLO = $(foreach target, $(TARGETS), hello-$(target).bin) $(foreach target, $(TARGETS), hello-$(target).ihx)
 
 .PHONY: all clean
 

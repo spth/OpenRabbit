@@ -48,7 +48,7 @@
 
 #elif defined(RCM3319)     // RCM3319: 44.2 MHz
 #define SERIAL_DIVIDER_38400 36
-#define CLOCK_DOUBLER 0x07 // Clock doubler for 22.116 MHz base
+#define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
 #define MB0CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.2 MHz) with write-protection
 #define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
 
