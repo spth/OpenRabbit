@@ -39,7 +39,7 @@ int putchar(int c)
 		putchar('\r');
 	}
 
-	while (SASR & 0x04);	// Wait for empty transmitter data register
+	while(SASR & 0x04);	// Wait for empty transmitter data register
 	SADR = c;
 	return c;
 }
@@ -52,7 +52,7 @@ unsigned long clock(void) // Get value of 32768 Hz real-time clock.
 		RTC0R = 0;
 		clock0 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
 		clock1 = ((unsigned long)(RTC0R) << 0) | ((unsigned long)(RTC1R) << 8) | ((unsigned long)(RTC2R) << 16) | ((unsigned long)(RTC3R) << 24);
-	} while (clock0 != clock1);
+	} while(clock0 != clock1);
 	return(clock1);
 }
 
@@ -62,7 +62,7 @@ void main(void)
 	// Give OpenRabbit and host some time (100 ms) to reconfigure baud rate
 	{
 		unsigned long c = clock();
-		while (clock() - c < 32 * 100);
+		while(clock() - c < 32 * 100);
 	}
 
 	PCFR = 0x40;	// Use pin PC6 as TXA
@@ -72,7 +72,7 @@ void main(void)
 
 	SACR = 0x00;	// No interrupts, 8-bit async mode
 
-	for (;;) {
+	for(;;) {
 		printf("Hello, world!\n");
 	}
 }

@@ -1,4 +1,4 @@
-AC_INIT([openrabbit],[0.2.5])
+AC_INIT([openrabbit],[0.2.6])
 
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE
