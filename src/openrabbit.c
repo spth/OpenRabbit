@@ -63,9 +63,7 @@ typedef struct {
 	} start, end;
 } coords;
 
-void sprintw(char *fmt, ...);
-
-void sprintw(char *fmt, ...) {
+void sprintw(const char *fmt, ...) {
 	va_list a;
 	int height,width;
 	getmaxyx(win_stdio, height, width);
