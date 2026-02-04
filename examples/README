@@ -9,14 +9,19 @@ Invoking make in the respective directory will build the example for a number of
 RCM2000 - Rabbit 2000@25.8 MHz
 RCM2020 - Rabbit 2000@18.4 MHz
 RCM2200 - Rabbit 2000@22.1 MHz
+RCM3010 - Rabbit 3000@29.4 MHz
 RCM3110 - Rabbit 3000@29.4 MHz
 RCM3209 - Rabbit 3000@44.2 MHz
+RCM3310 - Rabbit 3000@44.2 MHz
 RCM3319 - Rabbit 3000@44.2 MHz
+RCM3710 - Rabbit 3000@22.1 MHz
+RCM3720 - Rabbit 3000@22.1 MHz
 RCM3750 - Rabbit 3000@22.1 MHz
 RCM4110 - Rabbit 4000@29.5 MHz¹
+RCM4210 - Rabbit 4000@29.5 MHz¹
 RCM5700 - Rabbit 5000@50.0 MHz¹²
 
-¹ The SDCC-based toolchain doesn't fully support the Rabbit 4000/5000/6000 yet. In particular, 16-bit memory mode is not yet supported (not a problem for the RCM4110, which like most Rabbit 4000 boards, uses 8-bit memory mode).
+¹ The SDCC-based toolchain doesn't fully support the Rabbit 4000/5000/6000 yet. In particular, 16-bit memory mode is not yet supported (not a problem for the RCM4110 and RCM4210, which, like most Rabbit 4000 boards, use 8-bit memory mode).
 ² OpenRabbit does not yet work with the Rabbit 5000/6000.
 
 To support further boards:
