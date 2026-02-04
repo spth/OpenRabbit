@@ -27,26 +27,29 @@
 #elif defined(RCM2010)     // RCM2010: 25.8 MHz, 256K flash, 128K SRAM.
 // TODO
 
-#elif defined(RCM2020)     // RCM2020: 18.4 MHz, 256K flash, 128K SRAM.
+#elif defined(RCM2020)     // RCM2020: 18.43 MHz, 256K flash, 128K SRAM.
 #define SERIAL_DIVIDER_38400 15
 #define CLOCK_DOUBLER 0x07 // Clock doubler for 9.216 MHz base
-#define MB0CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB1CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB2CR_VALUE 0xc5   // RAM - 0 wait states
+#define MB0CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 18.43 MHz) with write-protection
+#define MB1CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 18.43 MHz) with write-protection
+#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 70 ns RAM @ 18.43 MHz)
 
 #elif defined(RCM2100)     // RCM2100: 22.1 MHz, 512K Flash, 512K SRAM
 // TODO
 
-#elif defined(RCM2110)     // RCM2110: 22.1 MHz, 128K Flash, 256K SRAM
+#elif defined(RCM2110)     // RCM2110: 22.12 MHz, 128K Flash, 256K SRAM
+#define SERIAL_DIVIDER_38400 18
+#define CLOCK_DOUBLER 0x07 // Clock doubler for 11.0592 MHz base
+#define MB0CR_VALUE 0xc8   // Flash - 0 wait states (guess, as the values in the id block don't make sense) with write-protection
+#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (guess, as the values in the id block don't make sense)
+
+#elif defined(RCM2120)     // RCM2120: 22.12 MHz, 512K Flash, 512K SRAM
 // TODO
 
-#elif defined(RCM2120)     // RCM2120: 22.1 MHz, 512K Flash, 512K SRAM
+#elif defined(RCM2130)     // RCM2130: 22.12 MHz, 128K Flash, 256K SRAM
 // TODO
 
-#elif defined(RCM2130)     // RCM2130: 22.1 MHz, 128K Flash, 256K SRAM
-// TODO
-
-#elif defined(RCM2200)     // RCM2200: 22.1 MHz, 256K flash, 128K SRAM
+#elif defined(RCM2200)     // RCM2200: 22.12 MHz, 256K flash, 128K SRAM
 #define SERIAL_DIVIDER_38400 18
 #define CLOCK_DOUBLER 0x07 // Clock doubler for 11.0592 MHz base
 #define MB0CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 22.12 MHz) with write-protection
@@ -58,15 +61,10 @@
 #define MB0CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 22.12 MHz) with write-protection
 #define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 22.12 MHz)
 
-#elif defined(RCM2250)     // RCM2200: 22.1 MHz, 512K flash, 512K SRAM
-#define SERIAL_DIVIDER_38400 18
-#define CLOCK_DOUBLER 0x07 // Clock doubler for 11.0592 MHz base
-#define MB0CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB1CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB2CR_VALUE 0xc5   // RAM - 0 wait states
-#define MB3CR_VALUE 0xc5   // RAM - 0 wait states
+#elif defined(RCM2250)     // RCM2250: 22.12 MHz, 512K flash, 512K SRAM
+// TODO
 
-#elif defined(RCM2260)     // RCM2200: 22.1 MHz, 512K flash, 512K SRAM
+#elif defined(RCM2260)     // RCM2260: 22.12 MHz, 512K flash, 512K SRAM
 // TODO
 
 #elif defined(RCM3000)     // RCM3000: 29.4 MHz, 512K flash, 512K SRAM
@@ -91,43 +89,45 @@
 #define MB0CR_VALUE 0xc8   // Flash 0 wait states (for 45 ns Flash @ 29.49 MHz) with write-protection
 #define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 29.49 MHz)
 
-#elif defined(RCM3209)     // RCM3209: 44.2 MHz, 256K flash, 256K SRAM
+#elif defined(RCM3209)     // RCM3209: 44.24 MHz, 256K flash, 256K SRAM
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
 #define MB0CR_VALUE 0x88   // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
 #define MB1CR_VALUE 0x88   // What Dynamic C 9 uses for RCM3209 Flash - 1 wait state (but with write-protection added)
-#define MB2CR_VALUE 0x85   // RAM - 1 wait state (for 55 ns RAM @ 44.2 MHz)
+#define MB2CR_VALUE 0x85   // RAM - 1 wait state (for 55 ns RAM @ 44.24 MHz)
 
-#elif defined(RCM3300)     // RCM3300: 44.2 MHz, 512K flash, 1MB SRAM
+#elif defined(RCM3300)     // RCM3300: 44.24 MHz, 512K flash, 1MB SRAM
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
 // TODO
 
-#elif defined(RCM3309)     // RCM3309: 44.2 MHz, 512K flash, 512K SRAM
+#elif defined(RCM3309)     // RCM3309: 44.24 MHz, 512K flash, 512K SRAM
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
 // TODO
 
-#elif defined(RCM3310)     // RCM3310: 44.2 MHz, 512K flash, 1MB SRAM
+#elif defined(RCM3310)     // RCM3310: 44.24 MHz, 512K flash, 1MB SRAM
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
-#define MB0CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.2 MHz) with write-protection
-#define MB1CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.2 MHz) with write-protection
-#define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
-#define MB3CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
+#define MB0CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.24 MHz) with write-protection
+#define MB1CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.24 MHz) with write-protection
+#define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.24 MHz)
+#define MB3CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.24 MHz)
 
-#elif defined(RCM3319)     // RCM3319: 44.2 MHz, 512K flash, 512K SRAM
+#elif defined(RCM3319)     // RCM3319: 44.24 MHz, 512K flash, 512K SRAM
 #define SERIAL_DIVIDER_38400 36
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
-#define MB0CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.2 MHz) with write-protection
-#define MB1CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.2 MHz) with write-protection
-#define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
-#define MB3CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.2 MHz)
+#define MB0CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.24 MHz) with write-protection
+#define MB1CR_VALUE 0x88   // Flash - 1 wait state (for 45 ns Flash @ 44.24 MHz) with write-protection
+#define MB2CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.24 MHz)
+#define MB3CR_VALUE 0x85   // RAM - 1 wait states (for 55 ns RAM @ 44.24 MHz)
 
-#elif defined(RCM3360)     // RCM3360: 44.2 MHz, 512K flash, 1MB SRAM
-// TODO
+#elif defined(RCM3360)     // RCM3360: 44.24 MHz, 512K flash, 1MB SRAM
+#define SERIAL_DIVIDER_38400 36
+#define CLOCK_DOUBLER 0x03 // Clock doubler for 22.116 MHz base
+// TODO (guess, as the values in the id block don't make sense)
 
-#elif defined(RCM3370)     // RCM3370: 44.2 MHz, 512K flash, 1MB SRAM
+#elif defined(RCM3370)     // RCM3370: 44.24 MHz, 512K flash, 1MB SRAM
 // TODO
 
 #elif defined(RCM3400)     // RCM3400: 29.4 MHz, 512K flash, 512K SRAM
@@ -161,22 +161,24 @@
 #elif defined(RCM3750)     // RCM3750: 22.1 MHz, 512K flash, 512K SRAM
 #define SERIAL_DIVIDER_38400 18
 #define CLOCK_DOUBLER 0x07 // Clock doubler for 11.0592 MHz base
-#define MB0CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB1CR_VALUE 0xc8   // Flash - 0 wait states with write-protection
-#define MB2CR_VALUE 0xc5   // RAM - 0 wait states
-#define MB3CR_VALUE 0xc5   // RAM - 0 wait states
+#define MB0CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 22.1 MHz) with write-protection
+#define MB1CR_VALUE 0xc8   // Flash - 0 wait states (for 45 ns Flash @ 22.1 MHz) with write-protection
+#define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 22.1 MHz)
+#define MB3CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 22.1 MHz)
 
-#elif defined(RCM3800)     // RCM3800: 51.61 MHz, 512K flash, 256K SRAM
+#elif defined(RCM3800)     // RCM3800: 51.61 MHz, 512K flash, 1M SRAM
 #define SERIAL_DIVIDER_38400 42
 #define CLOCK_DOUBLER 0x03 // Clock doubler for 25.8048 MHz base
 #define MB0CR_VALUE 0x48   // Flash - 2 wait states (for 45 ns Flash @ 51.61 MHz) with write-protection
 #define MB1CR_VALUE 0x48   // Flash - 2 wait states (for 45 ns Flash @ 51.61 MHz) with write-protection
 #define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 15 ns RAM @ 51.61 MHz)
 
-#elif defined(RCM3900)     // RCM3900: 44.2 MHz, 512K flash, 512K SRAM
+#elif defined(RCM3810)     // RCM3810: 25.8 MHz, 512K flash, 256K SRAM
+
+#elif defined(RCM3900)     // RCM3900: 44.24 MHz, 512K flash, 512K SRAM
 // TODO
 
-#elif defined(RCM3910)     // RCM3910: 44.2 MHz, 512K flash, 512K SRAM
+#elif defined(RCM3910)     // RCM3910: 44.24 MHz, 512K flash, 512K SRAM
 // TODO
 
 #elif defined(RCM4000)     // RCM4000: 58.98 MHz, 512K flash (16-bit), 512K SRAM (16-bit)
@@ -186,9 +188,6 @@
 // TODO
 
 #elif defined(RCM4050)     // RCM4050: 58.98 MHz, 1MB flash (16-bit), 1MB SRAM (16-bit)
-// TODO
-
-#elif defined(RCM4100)     // RCM4100: 58.98 MHz, 512K flash, 512K SRAM
 // TODO
 
 #elif defined(RCM4100)     // RCM4100: 58.98 MHz, 512K flash, 512K SRAM
@@ -215,7 +214,7 @@
 #define MB2CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 29.49 MHz)
 #define MB3CR_VALUE 0xc5   // RAM - 0 wait states (for 55 ns RAM @ 29.49 MHz)
 
-#elif defined(RCM4310)     // RCM4310: 58.98 MHz, 1024K flash, 512K SRAM
+#elif defined(RCM4300)     // RCM4300: 58.98 MHz, 1024K flash, 512K SRAM
 // TODO
 
 #elif defined(RCM4310)     // RCM4310: 58.98 MHz, 512K flash, 512K SRAM

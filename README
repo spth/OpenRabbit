@@ -1,8 +1,8 @@
 What is OpenRabbit?
 
-A free portable replacement for the Digi Rabbit Field Utility and an on-target debugger. This allows Rabbit development on OSes other than Windows. The on-target debugger currently only works with programs created using the non-free Dynamic C (which can be run .e.g via wine).
+A free portable replacement for the Digi Rabbit Field Utility and an on-target debugger. This allows Rabbit development on OSes other than Windows. The on-target debugger currently only works with programs created using the non-free Dynamic C (which can be run e.g. via wine).
 
-It currently fully supports the Rabbit 2000, 3000. On the Rabbit 4000 up to 1 MB of 8-bit memory is fully supported (i.e. support includes all Rabbit 4000-based RCM except for the RC4000 and RCM4010). There is a little bit of experimental support for the Rabbit 5000 (readout of CPU, RAM and parallel flash info only so far; to use the internal RAM of the Rabbit 5000 instead of the default, use e.g --ramcr 0x43 - this is required for RCM that do not have external RAM, i.e. RCM5700 and RCM5710).
+It currently fully supports the Rabbit 2000, 3000. On the Rabbit 4000 up to 1 MB of 8-bit memory is fully supported (i.e. support includes all Rabbit 4000-based RCM except: RC4000, RCM4010, and RCM4050 are unsupported; RCM4300 can use only half its flash). There is a little bit of experimental support for the Rabbit 5000 (readout of CPU, RAM and parallel flash info only so far; to use the internal RAM of the Rabbit 5000 instead of the default, use e.g --ramcr 0x43 - this is required for RCM that do not have external RAM, i.e. RCM5700 and RCM5710).
 
 A free initial loader (coldload.bin) and secondary loader (pilot.bin) are included in OpenRabbit, but it will also work with loader binary blobs from Dynamic C 8 or 9 (however, using an initial loader from Dynamic C 8 or 9 will override any --ramcr command line option, and not work with Rabbit 5000 at all).
 
@@ -48,4 +48,16 @@ Troubleshooting (if operation is unreliable, or it doesn't work at all):
 * Check if you or your programming cable is using a full-speed USB-to-serial interface with small receive buffer (e.g. the FT232R in the official "USB Programming Cable") with a USB High-Speed or faster hub. This can result in data loss. Suggested workaround: do not use USB hubs, use a high-speed USB-to-serial interface (e.g. FT232H), or one with a larger receive buffer (e.g. CP2102).
 * If you are using a serial programming cable with a USB-to-serial converter, try --slow to work around a Linux driver bug (https://bugzilla.kernel.org/show_bug.cgi?id=209359). Most USB-to-serial converters work when using the --slow option.
 * If you are using a serial programming cable with a CH340G-based USB-to-serial converter, check if you affected by a Linux driver bug (https://bugzilla.kernel.org/show_bug.cgi?id=220225) or FreeBSD driver bug (https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=287509).
+
+Tested, known-to-work boards (i.e., the "Hello, world!" example works):
+* Rabbit 2000: RCM2000, RCM2020, RCM2200, RCM2210
+* Rabbit 3000: RCM3010, RCM3110, RCM3209, RCM3310, RCM3319, RCM3710, RCM3720, RCM3750
+* Rabbit 4000: RCM4110, RCM4210
+
+Tested, known-not-to-(fully)-work boards:
+* Rabbit 2000: RCM2110 (bug? bad hardware?)
+* Rabbit 3000: RCM3360, RCM3380 (bug? bad hardware?)
+* Rabbit 4000: RCM4050 (missing 16-bit memory support)
+* Rabbit 5000: RCM5700, RCM5710, RCM5760 (missing Rabbit 5000 support)
+* Rabbit 6000: RCM6700, RCM6710 (missing Rabbit 6000 support)
 
